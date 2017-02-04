@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" verbose="10" name="Failed suite [Test Suite Android]">
+  <parameter name="app" value="test.apk"/>
+  <parameter name="device" value="Device1"/>
+  <listeners>
+    <listener class-name="org.uncommons.reportng.HTMLReporter"/>
+    <listener class-name="org.uncommons.reportng.JUnitXMLReporter"/>
+  </listeners>
+  <test name="Test on Android(failed)">
+    <parameter name="app" value="test.apk"/>
+    <parameter name="device" value="device"/>
+    <classes>
+      <class name="main.java.qa.android.test.java.PageObjectPatternTest">
+        <methods>
+          <include name="setUp"/>
+          <include name="pageObject"/>
+        </methods>
+      </class> <!-- main.java.qa.android.test.java.PageObjectPatternTest -->
+    </classes>
+  </test> <!-- Test on Android(failed) -->
+</suite> <!-- Failed suite [Test Suite Android] -->
