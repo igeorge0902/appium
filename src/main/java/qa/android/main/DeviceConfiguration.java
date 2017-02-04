@@ -55,10 +55,12 @@ public class DeviceConfiguration {
 			
 		//startADB(); // start adb service
 		
-	  	Path file = Paths.get("/Users/georgegaspar/Library/Android/sdk/platform-tools/adb");
+	  	Path file = Paths.get(TestBase.adbPath);
     	Path path = Paths.get(file.toFile().toString());
 		
-		String output = cmd.runCommand(path.toString() +" devices");
+		String output = cmd.runCommand(path.toString() + " devices");
+		//System.out.println(output);
+
 		String[] lines = output.split("\n");
 
 		if(lines.length<=1){
@@ -80,9 +82,11 @@ public class DeviceConfiguration {
 				String deviceID = lines[i];
 				String model = cmd.runCommand(path.toString() +" -s "+deviceID+" shell getprop ro.product.model").replaceAll("\\s+", "");
 				String brand = cmd.runCommand(path.toString() +" -s "+deviceID+" shell getprop ro.product.brand").replaceAll("\\s+", "");
+				String characteristics = cmd.runCommand(path.toString() +" -s "+deviceID+" shell getprop ro.build.characteristics").replaceAll("\\s+", "");
 				String osVersion = cmd.runCommand(path.toString() +" -s "+deviceID+" shell getprop ro.build.version.release").replaceAll("\\s+", "");
 				String deviceName = brand+" "+model;
 				
+				devices.put("characteristics"+i, characteristics);
 				devices.put("deviceID"+i, deviceID);
 				devices.put("deviceName"+i, deviceName);
 				devices.put("osVersion"+i, osVersion);

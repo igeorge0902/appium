@@ -7,33 +7,18 @@
 		<listener class-name="org.uncommons.reportng.JUnitXMLReporter" />
 	</listeners>
  
-		<parameter name="app" value="BROADBAND.0.1.0_R224.apk"  />
+		<parameter name="app" value="test.apk"  />
 
 		<parameter name = "device" value = "Device1" />
 
 	<test name="Test on Android" preserve-order="true">
-		<parameter name="app" value="BROADBAND.0.1.0_R224.apk" />
+		<parameter name="app" value="test.apk" />
 		<parameter name = "device" value = "device" />
-		<parameter name = "Operator" value = "2" />
 
 		<classes>
-		    <class name="main.java.qa.android.test.java.Test_BasicNavigation">
+		    <class name="main.java.qa.android.test.java.PageObjectPatternTest">
 				<methods>
-				    <exclude name="Stress_Test" />
-					<exclude name="Test_OffersScreen" />
-					<exclude name="Test_Menu" />
-					<exclude name="Test_Settings" />
-					<exclude name="Test_DetailPage" />
-					<exclude name="Test_Registration" /> 
-					<exclude name="Test_Login" />
-					<exclude name="Test_SignIn" />
-					<exclude name="Test_Search" />
-					<include name="Test_Sort" />
-					<exclude name="Test_Serie" />
-					<exclude name="Test_Parental" />
-					<exclude name="Test_DeviceManager" />
-					<exclude name="Test_FAQ" />
-					<exclude name="Test_Player" />
+				    <include name="pageObject" />
 				</methods>
 			</class>
 		</classes>

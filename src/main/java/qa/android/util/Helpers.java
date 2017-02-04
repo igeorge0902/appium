@@ -3,21 +3,21 @@ package main.java.qa.android.util;
 
 import main.java.qa.android.main.CaptureScreenshotOnFailureListener;
 import main.java.qa.android.main.TestBase;
+import main.java.qa.android.page.AnimationPage;
 import main.java.qa.android.util.Helpers;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.View;
-import android.view.WindowManager;
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
+import io.appium.java_client.MobileElement;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,14 +28,17 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class Helpers extends TestBase{
 	
-	
-	
 	public static void doOCR(String string) throws FileNotFoundException, IOException{
 		
 		String screenShot = CaptureScreenshotOnFailureListener.captureScreenShot(string);
 		String[] arguments = new String[] {screenShot}; 
 		TesseractExample.main(arguments);
 	}
+	
+    /** Verify the page has loaded **/
+    public static void loaded() {
+        find("Accessibility Node Provider");
+    }
 	
   /**
     Set implicit wait in seconds 
@@ -100,7 +103,7 @@ public abstract class Helpers extends TestBase{
     Return a list of elements by locator 
    */
   public static List<WebElement> elements(By locator) {
-    return driver.findElements(locator);
+    return (List<WebElement>) driver.findElements(locator);
   }
 
   /**
@@ -137,10 +140,6 @@ public abstract class Helpers extends TestBase{
   public static By for_text(int xpathIndex) {
     return By.xpath("//android.widget.TextView[" + xpathIndex + "]");
   }
-  
-  public static View text_(String string) {
-	    return (View) element(for_text_exact(string));
-	  }
 
   /**
     Return a static text element that contains text 
@@ -240,6 +239,56 @@ public abstract class Helpers extends TestBase{
 				//Copy file at destination
 				FileUtils.copyFile(SrcFile, DestFile);
 			
+	}
+	
+	public static void animationClick() {
+        loaded();
+        find("Animation").click();
+        AnimationPage.loaded();
+    }
+	
+	public static void swipeUpMenu(AppiumDriver driver, MobileElement element, int duration){
+    
+		int topY = element.getLocation().getY();
+		int bottomY = topY + element.getSize().getHeight();
+		int centerX = element.getLocation().getX() + (element.getSize().getWidth()/2);
+		driver.swipe(centerX, bottomY, centerX, topY, duration);
+	
+	}
+	
+	public static void swipeLeft()
+	{
+		  Dimension size = driver.manage().window().getSize();
+		  Log.info("Dimension of screen is : "+size.toString());
+		  int startx = (int) (size.width * 0.8);
+		  Log.info("Start of X: "+Integer.toString(startx));
+		  int endx = (int) (size.width * 0.2);
+		  Log.info("End of X: "+Integer.toString(endx));
+		  int starty = size.height / 2;
+		  Log.info("Position of Y: "+Integer.toString(starty));
+		  driver.swipe(startx, starty, endx, starty, 1000);
+			System.out.println("Swipe Left");
+	}
+	public static void swipeRight()
+	{
+		  Dimension size = driver.manage().window().getSize();
+		  Log.info("Dimension of screen is : "+size.toString());
+		  int startx = (int) (size.width * 0.2);
+		  Log.info("Start of X: "+Integer.toString(startx));
+		  int endx = (int) (size.width * 0.8);
+		  Log.info("End of X: "+Integer.toString(endx));
+		  int starty = size.height / 2;
+		  Log.info("Position of Y: "+Integer.toString(starty));
+		  driver.swipe(startx, starty, endx, starty, 1000);
+			System.out.println("Swipe Right");
+	}
+	public static void swipeUp()
+	{
+		driver.swipe(200, 900, 200, 400, 0);
+	}
+	public static void swipeDown()
+	{
+		driver.swipe(250, 400, 250, 900, 0);
 	}
   
 }

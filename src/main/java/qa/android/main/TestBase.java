@@ -51,17 +51,18 @@ public class TestBase extends Verify implements Constants {
 	static DeviceConfiguration deviceConf = new DeviceConfiguration();
 	
 	protected static WebElement element = null;
-	protected static AndroidDriver driver;
+	protected static AndroidDriver<?> driver;
 	
 	  public static URL serverAddress;
 	  public static WebDriverWait driverWait;
-		public static String testngXml = PropertyUtils.getProperty("testngXml");
+	  public static String testngXml = PropertyUtils.getProperty("testngXml");
+	  public static String adbPath = PropertyUtils.getProperty("adb");
 
 
 	  /**
 	    Initialize the webdriver. Must be called before using any helper methods. 
 	   */
-	  public static void init(AndroidDriver webDriver, URL driverServerAddress) {
+	  public static void init(AndroidDriver<?> webDriver, URL driverServerAddress) {
 	    driver = webDriver;
 	    serverAddress = driverServerAddress;
 	    int timeoutInSeconds = 60;
@@ -79,7 +80,7 @@ public class TestBase extends Verify implements Constants {
 		
 		try {
 			devices = deviceConf.getDivces();
-			deviceCount = devices.size()/3;
+			deviceCount = devices.size()/4;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -96,7 +97,7 @@ public class TestBase extends Verify implements Constants {
 		TestBase.characteristics = devices.get("characteristics"+deviceCount);
 	}
 	
-	public synchronized final static String characteristics() {
+	public static String characteristics() {
 		if (characteristics == null) {
 			TestBase.characteristics = devices.get("characteristics"+deviceCount);
 			

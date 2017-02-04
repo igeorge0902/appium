@@ -117,13 +117,13 @@ public class PageAnnotations {
 
 	@iOSFindAll({
 		@iOSFindBy(xpath = "ComputeSumButton_Test"),	
-		@iOSFindBy(name = "ComputeSumButton")	//it is real locator
+		@iOSFindBy(tagName = "ComputeSumButton")	//it is real locator
 	})
 	public WebElement findAllElement;
 	
 	@iOSFindAll({
 		@iOSFindBy(xpath = "ComputeSumButton_Test"),	
-		@iOSFindBy(name = "ComputeSumButton")	//it is real locator
+		@iOSFindBy(tagName = "ComputeSumButton")	//it is real locator
 	})
 	public List<WebElement> findAllElements;
 

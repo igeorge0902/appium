@@ -19,7 +19,13 @@ public class CommandPrompt {
 	public String runCommand(String command) throws InterruptedException, IOException
 	{
 		
+		try {
 		p = Runtime.getRuntime().exec(command);
+			
+			} catch (Exception e) {
+			System.err.println(e.getMessage());
+			System.exit(1);
+		}
 			
 		BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		

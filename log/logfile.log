@@ -15,3 +15,52 @@
 [03/07/15 02:12:09:009 CEST]  INFO log4j.Logger: Test_Menu test succeeded!
 [03/07/15 02:12:09:009 CEST]  INFO log4j.Logger: Minden fasza
 [03/07/15 02:12:11:011 CEST]  INFO log4j.Logger: Completed executing test Test on Android
+[04/02/17 05:34:52:052 CET]  INFO log4j.Logger: Nr 1 attached device: null, null
+[04/02/17 05:34:52:052 CET]  INFO log4j.Logger: Nr of attached devices: 0
+[04/02/17 05:34:52:052 CET]  INFO log4j.Logger: MAC
+[04/02/17 05:34:57:057 CET]  INFO log4j.Logger: org.openqa.selenium.WebDriverException: org.apache.http.conn.HttpHostConnectException: Connect to 127.0.0.1:4723 [/127.0.0.1] failed: Connection refused
+Build info: version: '3.0.1', revision: '1969d75', time: '2016-10-18 09:49:13 -0700'
+System info: host: 'Gaspars-MacBook-Pro.local', ip: '192.168.1.101', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '10.12.3', java.version: '1.8.0_91'
+Driver info: driver.version: AndroidDriver
+[04/02/17 05:35:07:007 CET]  INFO log4j.Logger: test.apk is reconnecting!
+[04/02/17 05:35:07:007 CET]  INFO log4j.Logger: Nr 1 attached device: null, null
+[04/02/17 05:35:07:007 CET]  INFO log4j.Logger: Nr of attached devices: 0
+[04/02/17 05:35:07:007 CET]  INFO log4j.Logger: MAC
+[04/02/17 05:37:58:058 CET]  INFO log4j.Logger: Nr 1 attached device: null, null
+[04/02/17 05:37:58:058 CET]  INFO log4j.Logger: Nr of attached devices: 0
+[04/02/17 05:37:58:058 CET]  INFO log4j.Logger: MAC
+[04/02/17 05:44:57:057 CET]  INFO log4j.Logger: Nr 1 attached device: null, null
+[04/02/17 05:44:57:057 CET]  INFO log4j.Logger: Nr of attached devices: 0
+[04/02/17 05:44:57:057 CET]  INFO log4j.Logger: MAC
+[04/02/17 06:03:43:043 CET]  INFO log4j.Logger: D025A0A0308406EF
+[04/02/17 06:03:43:043 CET]  INFO log4j.Logger: Amazon KFTT
+[04/02/17 06:03:43:043 CET]  INFO log4j.Logger: 4.0.3
+[04/02/17 06:03:43:043 CET]  INFO log4j.Logger: Nr 1 attached device: Amazon KFTT, null
+[04/02/17 06:03:43:043 CET]  INFO log4j.Logger: Nr of attached devices: 1
+[04/02/17 06:03:43:043 CET]  INFO log4j.Logger: MAC
+[04/02/17 06:16:14:014 CET]  INFO log4j.Logger: D025A0A0308406EF
+[04/02/17 06:16:14:014 CET]  INFO log4j.Logger: Amazon KFTT
+[04/02/17 06:16:14:014 CET]  INFO log4j.Logger: 4.0.3
+[04/02/17 06:20:59:059 CET]  INFO log4j.Logger: D025A0A0308406EF
+[04/02/17 06:20:59:059 CET]  INFO log4j.Logger: Amazon KFTT
+[04/02/17 06:20:59:059 CET]  INFO log4j.Logger: tablet
+[04/02/17 06:20:59:059 CET]  INFO log4j.Logger: 4.0.3
+[04/02/17 06:20:59:059 CET]  INFO log4j.Logger: Nr 1 attached device: null,null
+[04/02/17 06:20:59:059 CET]  INFO log4j.Logger: Nr of attached devices: 4
+[04/02/17 06:21:00:000 CET]  INFO log4j.Logger: MAC
+[04/02/17 06:22:21:021 CET]  INFO log4j.Logger: D025A0A0308406EF
+[04/02/17 06:22:21:021 CET]  INFO log4j.Logger: Amazon KFTT
+[04/02/17 06:22:21:021 CET]  INFO log4j.Logger: tablet
+[04/02/17 06:22:21:021 CET]  INFO log4j.Logger: 4.0.3
+[04/02/17 06:22:21:021 CET]  INFO log4j.Logger: Nr 1 attached device: null, null
+[04/02/17 06:22:21:021 CET]  INFO log4j.Logger: Nr of attached devices: 4
+[04/02/17 06:22:21:021 CET]  INFO log4j.Logger: MAC
+[04/02/17 06:23:20:020 CET]  INFO log4j.Logger: D025A0A0308406EF
+[04/02/17 06:23:20:020 CET]  INFO log4j.Logger: Amazon KFTT
+[04/02/17 06:23:20:020 CET]  INFO log4j.Logger: tablet
+[04/02/17 06:23:20:020 CET]  INFO log4j.Logger: 4.0.3
+[04/02/17 06:26:10:010 CET]  INFO log4j.Logger: D025A0A0308406EF
+[04/02/17 06:26:10:010 CET]  INFO log4j.Logger: Amazon KFTT
+[04/02/17 06:26:10:010 CET]  INFO log4j.Logger: tablet
+[04/02/17 06:26:10:010 CET]  INFO log4j.Logger: 4.0.3
+[04/02/17 06:26:34:034 CET]  INFO log4j.Logger: Nr 1 attached device: Amazon KFTT, tablet

@@ -7,16 +7,17 @@ https://github.com/appium/appium/blob/2fe7ea7b098ba2145e3c7b4cc31276a3e26921ec/s
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>appium</groupId>
-  <artifactId>Android_BroadBand_testapp</artifactId>
-      <packaging>jar</packaging>
+  <artifactId>Android_testapp</artifactId>
+  <packaging>jar</packaging>
   <version>0.0.1</version>
-  <name>Android_BroadBand_testapp</name>
-  <description>TestNG test verification sets for the BroadBand app</description>
+  <name>Android_testapp</name>
+  <description>Appium test application</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <selenium.version>2.45.0</selenium.version>
-    <testng.version>6.9.4</testng.version>
+    <selenium.version>3.0.1</selenium.version>
+    <testng.version>6.10</testng.version>
+    <appium.version>4.1.2</appium.version>
     <java.ext.dirs>${project.build.directory}/libs</java.ext.dirs>
   </properties>
   
@@ -24,7 +25,7 @@ https://github.com/appium/appium/blob/2fe7ea7b098ba2145e3c7b4cc31276a3e26921ec/s
     <dependency>
       <groupId>io.appium</groupId>
       <artifactId>java-client</artifactId>
-      <version>2.2.0</version>
+      <version>${appium.version}</version>
     </dependency>
     
             <dependency>
@@ -59,13 +60,13 @@ https://github.com/appium/appium/blob/2fe7ea7b098ba2145e3c7b4cc31276a3e26921ec/s
 	<dependency>
 		<groupId>com.google.inject</groupId>
 		<artifactId>guice</artifactId>
-		<version>4.0</version>
+		<version>4.1.0</version>
 	</dependency>
             
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
-      <version>1.1</version>
+      <version>1.1.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -98,18 +99,13 @@ https://github.com/appium/appium/blob/2fe7ea7b098ba2145e3c7b4cc31276a3e26921ec/s
 	<artifactId>selendroid-client</artifactId>
 	<version>0.15.0</version>
 	</dependency>
-    
-    <dependency>
-	<groupId>com.google.android</groupId>
-	<artifactId>android</artifactId>
-	<version>LATEST</version>
-	</dependency>	
 	    		
-			<dependency>
-				<groupId>net.sourceforge.tess4j</groupId>
-				<artifactId>tess4j</artifactId>
-				<version>1.5.0</version>
-			</dependency>
+	<dependency>
+	    <groupId>net.sourceforge.tess4j</groupId>
+	    <artifactId>tess4j</artifactId>
+	    <version>3.2.1</version>
+	</dependency>
+
     
   </dependencies>
   

@@ -1,17 +1,20 @@
 package main.java.qa.android.test.java;
 
-import main.java.qa.android.page.HomePage;
+import main.java.qa.android.page.SamplePageObject;
 import main.java.qa.android.util.AppiumTest;
 import static main.java.qa.android.util.Helpers.back;
 
+import org.testng.annotations.Test;
+
 public class PageObjectPatternTest extends AppiumTest {
 
-    @org.junit.Test
+    @Test(alwaysRun = true)
     public void pageObject() throws Exception {
-        HomePage.accessibilityClick();
-        back();
+        
+    	SamplePageObject spqr = new SamplePageObject();
+    	spqr.test();
+    	
+        //back();
 
-        HomePage.animationClick();
-        back();
     }
 }

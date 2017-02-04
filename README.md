@@ -15,4 +15,9 @@ To install and run all tests, run:
     
 To use a different .apk on different device, simply update the parameters in the testng.xml. (not all devices are implemented yet)
 
+# Sample codes
+This repository contains sample applications which are used mostly by appium functional tests:
+
+https://github.com/appium/sample-code/blob/master/sample-code/examples/java/junit/src/test/java/com/saucelabs/appium/AndroidContactsTest.java
+
     
