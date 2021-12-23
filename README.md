@@ -6,13 +6,13 @@ You will then need to start appium, eg:
 
     grunt appium
 
-To compile and run all tests, run:
+To compile the project, run:
 
     mvn clean install
     
-Then execute the jar file, with the iOS debug build in the same directory.
+Then execute the .jar file, with the iOS debug build in the same directory.
 
-Or just run the tests from the IDE, ro command line:
+Or just run the tests from the IDE, or command line:
 
     mvn test
     
