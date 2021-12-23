@@ -16,6 +16,10 @@ Or just run the tests from the IDE, or command line:
 
     mvn test
     
+Tested on:
+    * Xode 13.00
+    * iOS 14.7
+    
 Further info on real device testing:
  * [Appium real device](http://appium.io/docs/en/drivers/ios-xcuitest-real-devices/#full-manual-configuration)
  * [Appium iOS tutorial](https://www.browserstack.com/guide/appium-ios-tutorial)
