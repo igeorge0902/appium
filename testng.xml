@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Suite one" verbose="10">
+  <listeners>
+    <listener class-name="org.uncommons.reportng.HTMLReporter"/>
+    <listener class-name="org.uncommons.reportng.JUnitXMLReporter"/>
+  </listeners>
+   <test name="Test on IOS" preserve-order="true">
+   <parameter name = "device" value = "iPhone" />
+   	<parameter name="app" value="SwiftLoginScreen.app" />
+    <classes>
+      <class name="main.java.qa.ios.test.java.TestNavigations">
+        <methods>
+          <include name="pageObject"/>
+        </methods>
+      </class> <!-- main.java.qa.ios.test.java.TestNavigations -->
+    </classes>
+  </test> <!-- Command line test 7de29cd3-a867-43ad-ac9e-a3231a5881d2 -->
+</suite> <!-- Suite one -->
