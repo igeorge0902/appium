@@ -1,4 +1,4 @@
-package main.java.qa.ios.testng;
+package qa.ios.testng;
 
 import org.apache.log4j.Logger;
 import org.testng.Reporter;

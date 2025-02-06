@@ -1,7 +1,4 @@
-package main.java.qa.ios.testng;
-
-
-import main.java.qa.ios.main.TestBase;
+package qa.ios.testng;
 
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -12,6 +9,7 @@ import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import qa.ios.base.TestBase;
 
 public class TestListeners extends TestBase implements ITestListener, ISuiteListener, IInvokedMethodListener {
 	

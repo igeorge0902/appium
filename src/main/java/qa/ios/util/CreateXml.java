@@ -1,4 +1,4 @@
-package main.java.qa.ios.util;
+package qa.ios.util;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -8,15 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.swing.*;
-
 import org.testng.internal.ClassHelper;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.*;

@@ -1,6 +1,6 @@
-package main.java.qa.ios.navigation;
+package qa.ios.navigation;
 
-import main.java.qa.ios.util.Helpers;
+import qa.ios.util.Helpers;
 
 public class HomeScreen {
 

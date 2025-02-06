@@ -1,11 +1,10 @@
-package main.java.qa.ios.testng;
+package qa.ios.testng;
+
+import org.testng.Assert;
+import qa.ios.base.TestBase;
 
 import java.util.Collection;
 import java.util.Iterator;
-
-import main.java.qa.ios.main.TestBase;
-
-import org.testng.Assert;
 
 
 /**

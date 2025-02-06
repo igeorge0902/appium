@@ -1,4 +1,4 @@
-package main.java.qa.ios.testng;
+package qa.ios.testng;
 
 
 /**

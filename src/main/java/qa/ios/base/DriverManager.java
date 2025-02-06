@@ -1,4 +1,4 @@
-package main.java.qa.ios.main;
+package qa.ios.base;
 
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSElement;
@@ -9,7 +9,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
-import main.java.qa.ios.util.PropertyUtils;
+import qa.ios.util.PropertyUtils;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -46,10 +46,10 @@ public class DriverManager extends TestBase implements Constants {
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, devices.get("deviceName"));
 	    capabilities.setCapability("udid", devices.get("UniqueDeviceID"));	    
 	    capabilities.setCapability("bundleId", PropertyUtils.getProperty("bundleid"));
-	    capabilities.setCapability(MobileCapabilityType.SUPPORTS_NETWORK_CONNECTION, "true");
-	    capabilities.setCapability("xcodeOrgId", "X8DL5FV4EA");
+		capabilities.setCapability("appium:networkConnectionEnabled", true);	    capabilities.setCapability("xcodeOrgId", "X8DL5FV4EA");
         capabilities.setCapability("xcodeSigningId", "Apple Development");
         capabilities.setCapability("updatedWDABundleId", "com.georgegaspar.SwiftLoginScreen");
+		capabilities.setCapability("appium:automationName", "XCUITest");
 	    
         //capabilities.setCapability(MobileCapabilityType.APP, app);
 
@@ -72,9 +72,11 @@ public class DriverManager extends TestBase implements Constants {
 	    }
 	    
 		URL serverAddress;
-		serverAddress = new URL("http://127.0.0.1:4723/wd/hub");
-		
-        driver = new IOSDriver<>(serverAddress, capabilities);
+		serverAddress = new URL("http://127.0.0.1:4723/");
+		//serverAddress = new URL("http://127.0.0.1:4723/wd/hub");
+
+
+		driver = new IOSDriver<>(serverAddress, capabilities);
 	    driverWait = new WebDriverWait(driver, 30);
 		driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
 		driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);

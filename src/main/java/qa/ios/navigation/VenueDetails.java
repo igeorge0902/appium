@@ -1,15 +1,12 @@
-package main.java.qa.ios.navigation;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.testng.Assert;
+package qa.ios.navigation;
 
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
-import io.appium.java_client.ios.IOSElement;
-import main.java.qa.ios.main.TestBase;
+import org.testng.Assert;
+import qa.ios.base.TestBase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class VenueDetails extends TestBase {
 

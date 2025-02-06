@@ -34,7 +34,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <dependency>
             <groupId>org.uncommons</groupId>
             <artifactId>reportng</artifactId>
-            <version>LATEST</version>
+            <version>1.1.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.testng</groupId>
@@ -85,7 +85,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <plugins>
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>3.2.0</version>
                 <reportSets>
                     <reportSet>
                         <reports>

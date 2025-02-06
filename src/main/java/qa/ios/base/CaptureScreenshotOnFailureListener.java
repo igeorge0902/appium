@@ -1,4 +1,4 @@
-package main.java.qa.ios.main;
+package qa.ios.base;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;

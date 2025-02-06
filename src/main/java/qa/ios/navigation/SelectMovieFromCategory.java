@@ -1,13 +1,7 @@
-package main.java.qa.ios.navigation;
+package qa.ios.navigation;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.openqa.selenium.By;
-
-import io.appium.java_client.MobileElement;
-import main.java.qa.ios.main.TestBase;
-import main.java.qa.ios.page.PageObjects;
+import qa.ios.base.TestBase;
+import qa.ios.page.PageObjects;
 
 public class SelectMovieFromCategory extends TestBase {
 

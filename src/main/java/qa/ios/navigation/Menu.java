@@ -1,13 +1,10 @@
-package main.java.qa.ios.navigation;
+package qa.ios.navigation;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import qa.ios.base.TestBase;
+import qa.ios.page.PageObjects;
 
-import main.java.qa.ios.main.TestBase;
-import main.java.qa.ios.page.PageObjects;
-import main.java.qa.ios.util.Helpers;
-
-public class Menu extends TestBase{
+public class Menu extends TestBase {
 	
 	public static Menu withoutSignedIn() throws Exception{
 		

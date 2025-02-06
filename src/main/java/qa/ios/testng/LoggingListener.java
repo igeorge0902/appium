@@ -1,4 +1,4 @@
-package main.java.qa.ios.testng;
+package qa.ios.testng;
 
 /*
  * For custom logging messages after tests have finished.
@@ -7,12 +7,11 @@ package main.java.qa.ios.testng;
  */
 
 
-import main.java.qa.ios.main.TestBase;
-
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.TestListenerAdapter;
+import qa.ios.base.TestBase;
 
 public class LoggingListener extends TestListenerAdapter {
 		  	 

@@ -1,11 +1,11 @@
-package main.java.qa.ios.main;
+package qa.ios.base;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import main.java.qa.ios.util.PropertyUtils;
+import qa.ios.util.PropertyUtils;
 
 public class DeviceConfiguration extends TestBase{
 	

@@ -1,7 +1,7 @@
-package main.java.qa.ios.main;
+package qa.ios.base;
 
 import io.appium.java_client.ios.IOSElement;
-import main.java.qa.ios.util.Helpers;
+import qa.ios.util.Helpers;
 
 public interface Constants {
 	

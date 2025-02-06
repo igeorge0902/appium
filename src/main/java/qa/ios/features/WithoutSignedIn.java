@@ -1,8 +1,8 @@
-package main.java.qa.ios.features;
+package qa.ios.features;
 
-import main.java.qa.ios.main.TestBase;
-import main.java.qa.ios.navigation.Menu;
-import main.java.qa.ios.navigation.SelectMovieFromCategory;
+import qa.ios.base.TestBase;
+import qa.ios.navigation.Menu;
+import qa.ios.navigation.SelectMovieFromCategory;
 
 public class WithoutSignedIn extends TestBase {
 	

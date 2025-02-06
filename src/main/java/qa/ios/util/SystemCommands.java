@@ -1,4 +1,4 @@
-package main.java.qa.ios.util;
+package qa.ios.util;
 
 import java.io.*;
 import java.nio.file.Path;

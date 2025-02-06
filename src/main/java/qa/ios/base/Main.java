@@ -1,4 +1,4 @@
-package main.java.qa.ios.main;
+package qa.ios.base;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

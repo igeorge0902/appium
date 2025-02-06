@@ -1,37 +1,26 @@
-package main.java.qa.ios.util;
-
-
-import main.java.qa.ios.main.Constants;
-import main.java.qa.ios.main.DriverManager;
-import main.java.qa.ios.main.TestBase;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+package qa.ios.util;
 
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.ios.IOSElement;
+import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.Augmenter;
+import qa.ios.base.Constants;
+import qa.ios.base.TestBase;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Helpers extends TestBase implements Constants{
+public class Helpers extends TestBase implements Constants {
 	
 	
 	public static WebElement pageIndicator() {

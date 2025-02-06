@@ -1,26 +1,23 @@
-package main.java.qa.ios.main;
+package qa.ios.base;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import io.appium.java_client.ios.*;
-import main.java.qa.ios.testng.Verify;
-import main.java.qa.ios.util.PropertyUtils;
-
-import org.apache.commons.logging.LogFactory;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.IOSElement;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import qa.ios.testng.Verify;
+import qa.ios.util.PropertyUtils;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class TestBase extends Verify implements Constants {

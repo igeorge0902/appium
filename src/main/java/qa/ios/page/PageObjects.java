@@ -1,11 +1,11 @@
-package main.java.qa.ios.page;
+package qa.ios.page;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import io.appium.java_client.ios.IOSElement;
-import main.java.qa.ios.main.TestBase;
-import main.java.qa.ios.util.Helpers;
+import qa.ios.base.TestBase;
+import qa.ios.util.Helpers;
 
 public class PageObjects extends TestBase {
 

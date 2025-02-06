@@ -1,15 +1,13 @@
-package main.java.qa.ios.testng;
+package qa.ios.testng;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import main.java.qa.ios.main.TestBase;
-
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 import org.testng.internal.Utils;
- 
+import qa.ios.base.TestBase;
+
 public class TestMethodListener extends TestBase implements IInvokedMethodListener{
 	
  
