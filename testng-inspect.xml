@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Inspection Suite" verbose="10">
+   <test name="Inspect UI Elements" preserve-order="true">
+   <parameter name="device" value="iPhone" />
+   	<parameter name="app" value="SwiftCinemas.app" />
+    <classes>
+      <class name="InspectUI">
+        <methods>
+          <include name="step1_appLaunch"/>
+          <include name="step2_afterSwipe"/>
+          <include name="step3_moviesScreen"/>
+          <include name="step4_afterCategories"/>
+        </methods>
+      </class>
+    </classes>
+  </test>
+</suite>
+

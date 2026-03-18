@@ -1,11 +1,12 @@
 package qa.ios.testng;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
-import org.testng.internal.Utils;
 import qa.ios.base.TestBase;
 
 public class TestMethodListener extends TestBase implements IInvokedMethodListener{
@@ -74,7 +75,7 @@ public class TestMethodListener extends TestBase implements IInvokedMethodListen
                     for(int i =0 ; i < size-1; i++){
                         failureMessage.append("(").append(i+1).append(")").append(lThrowable.get(i).getClass().getName()).append(":").append(lThrowable.get(i).getMessage()).append("\n");                     
                         fullStack.append("Failure ").append(i+1).append(" of ").append(size).append("\n"); 
-                        fullStack.append(Utils.stackTrace(lThrowable.get(i),false)[1]).append("\n");
+                        fullStack.append(getStackTrace(lThrowable.get(i))).append("\n");
                         
                     }
  
@@ -95,6 +96,12 @@ public class TestMethodListener extends TestBase implements IInvokedMethodListen
 
              
         }
+    }
+
+    private static String getStackTrace(Throwable t) {
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
     }
  
 }

@@ -1,40 +1,40 @@
 package qa.ios.page;
 
+import io.appium.java_client.AppiumBy;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import io.appium.java_client.ios.IOSElement;
 import qa.ios.base.TestBase;
 import qa.ios.util.Helpers;
 
 public class PageObjects extends TestBase {
 
-	public static IOSElement goToMenu() {
-		return driver.findElementByAccessibilityId("Go to Menu");
+	public static WebElement goToMenu() {
+		return driver.findElement(AppiumBy.accessibilityId("Go to Menu"));
 	}
-	
-	public static IOSElement clickAlert() {
-		return driver.findElementByAccessibilityId("OK");
+
+	public static WebElement clickAlert() {
+		return driver.findElement(AppiumBy.accessibilityId("OK"));
 	}
-	
+
 	public static WebElement checkUser(String text) {
 		return Helpers.getElement(text);
 	}
-	
-	public static IOSElement getElementWithText(String text) {
-		return driver.findElementByAccessibilityId(text);
+
+	public static WebElement getElementWithText(String text) {
+		return driver.findElement(AppiumBy.accessibilityId(text));
 	}
-	
-	public static IOSElement menu() {
+
+	public static WebElement menu() {
 		return driver.findElement(By.xpath("//XCUIElementTypeButton[@name='Menu']"));
 	}
-	
-	public static IOSElement movies() {
+
+	public static WebElement movies() {
 		return driver.findElement(By.xpath("//XCUIElementTypeButton[@name='Movies']"));
 	}
-	
-	public static IOSElement back() {
+
+	public static WebElement back() {
 		return driver.findElement(By.xpath("//XCUIElementTypeButton[@name='Back']"));
 	}
-	
+
 }

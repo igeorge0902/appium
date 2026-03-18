@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.*;
-import org.testng.internal.ClassHelper;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
@@ -203,7 +202,7 @@ public class CreateXml extends JFrame{
         	    } 
         	    
         	    if (!value6.isEmpty()) {
-        	    	m_class = ClassHelper.forName(value6); 
+        	    	try { m_class = Class.forName(value6); } catch (ClassNotFoundException ex) { m_class = null; }
         	    	
         	    	if (m_class !=null){  
         				testClass = new XmlClass(value6);
@@ -232,7 +231,7 @@ public class CreateXml extends JFrame{
         	    
         		if (!value7.isEmpty()){
         	    	included = new XmlInclude(value7);
-        			m_class = ClassHelper.forName(value6);       	    	
+        			try { m_class = Class.forName(value6); } catch (ClassNotFoundException ex) { m_class = null; }
         			
         			if (m_class !=null){
         		
@@ -275,7 +274,7 @@ public class CreateXml extends JFrame{
         		} 
        	    
         		if (value8.isEmpty()){
-            	    	m_class = ClassHelper.forName(value6);       	    	
+            	    	try { m_class = Class.forName(value6); } catch (ClassNotFoundException ex) { m_class = null; }
             			if (m_class !=null){
             				
         				methods = m_class.getDeclaredMethods();
@@ -334,7 +333,7 @@ public class CreateXml extends JFrame{
 	}
         		
         		if (!value8.isEmpty()){
-        			m_class = ClassHelper.forName(value6);       	    	
+        			try { m_class = Class.forName(value6); } catch (ClassNotFoundException ex) { m_class = null; }
         			if (m_class !=null){
         				
         				methods = m_class.getDeclaredMethods();
@@ -442,7 +441,7 @@ public class CreateXml extends JFrame{
                 		}
 
                 	
-                	else if (ClassHelper.forName(value6) == null){
+                	else if (classForNameOrNull(value6) == null){
         				
         				JOptionPane.showMessageDialog(null, "No Test Classes found", "What happened?", JOptionPane. INFORMATION_MESSAGE);        				        				
         			}                     	
@@ -455,7 +454,7 @@ public class CreateXml extends JFrame{
         			else {
         				
         				//testClass = new XmlClass(value6);
-            	    	m_class = ClassHelper.forName(value6);       	    	
+            	    	try { m_class = Class.forName(value6); } catch (ClassNotFoundException ex) { m_class = null; }
             	    	
         				testSet_.remove(value6);
         				testClasses_.keySet().remove(testClass.getName());
@@ -564,6 +563,11 @@ public class CreateXml extends JFrame{
 
 
     
+    /** Safely attempt Class.forName, returning null instead of throwing. */
+    private static Class<?> classForNameOrNull(String name) {
+        try { return Class.forName(name); } catch (ClassNotFoundException e) { return null; }
+    }
+
     public static void main(String arg[]){
 
 	CreateXml frame=new CreateXml();
