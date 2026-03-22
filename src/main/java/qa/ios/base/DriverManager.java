@@ -30,7 +30,12 @@ public class DriverManager extends TestBase implements Constants {
 
 		XCUITestOptions options = new XCUITestOptions();
 
-		if (deviceCount > 0) {
+		// If a simulator UDID is explicitly provided, always use simulator mode
+		// even when a real USB device is connected.
+		String forceSimUdid = System.getProperty("sim.udid", "");
+		boolean useSimulator = !forceSimUdid.isEmpty() || deviceCount == 0;
+
+		if (!useSimulator) {
 			// Real device configuration
 			options.setPlatformName("iOS");
 			options.setPlatformVersion(devices.get("ProductVersion"));
@@ -84,10 +89,10 @@ public class DriverManager extends TestBase implements Constants {
 		URL serverAddress = new URL(serverUrl);
 
 		driver = new IOSDriver(serverAddress, options);
-		driverWait = new WebDriverWait(driver, Duration.ofSeconds(30));
-		driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
-		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
-		driver.setSetting("snapshotTimeout", 600);
+		driverWait = new WebDriverWait(driver, Duration.ofSeconds(5));
+		driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+		driver.setSetting("snapshotTimeout", 60);
 		driver.setSetting("snapshotMaxDepth", 200);
 		driver.setSetting("useJSONSource", true);
 

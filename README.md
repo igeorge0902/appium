@@ -26,6 +26,10 @@ Install these before running the tests:
 | **Node.js 18+** | `brew install node` | `node -v` |
 | **Appium 3** | `npm install -g appium` | `appium -v` |
 | **XCUITest driver** | `appium driver install xcuitest` | `appium driver list --installed` |
+| **Docker CLI** | `brew install docker` | `docker --version` |
+| **colima** | `brew install colima` | `colima status` |
+| **Minikube** | `brew install minikube` | `minikube version` |
+| **kubectl** | `brew install kubectl` | `kubectl version --client` |
 
 ---
 
@@ -38,39 +42,50 @@ must be running. Follow the [local K8s runbook](../k8infra/README-k8s-local.md) 
 condensed steps:
 
 ```bash
-# Start Minikube
-minikube start --driver=qemu2 --cpus=4 --memory=8192
+# Start colima (Docker-compatible daemon — no Docker Desktop licence needed)
+colima start --cpu 4 --memory 8 --disk 60
+
+# Start Minikube with the Docker driver
+minikube start --driver=docker --cpus=4 --memory=8192
 minikube addons enable ingress
 
-# Build & deploy (from repo root)
+# Build Quarkus artifacts (from repo root)
 (cd dalogin-quarkus            && ./mvnw package -DskipTests)
 (cd mbook-quarkus              && ./mvnw package -DskipTests)
 (cd mbooks-quarkus             && ./mvnw package -DskipTests)
 (cd simple-service-webapp-quarkus && ./mvnw package -DskipTests)
 
-for img in dalogin-quarkus mbook-quarkus mbooks-quarkus simple-service-webapp-quarkus; do
-  podman build -t ${img}:local ./${img}
-  podman save -o /tmp/${img}.tar localhost/${img}:local
-  minikube image load /tmp/${img}.tar
-  minikube ssh -- sudo ctr -n k8s.io images tag \
-    localhost/${img}:local docker.io/library/${img}:local
-done
+# Build images inside Minikube's Docker (fastest — no loading/retag needed)
+eval $(minikube docker-env)
+docker build -t dalogin-quarkus:local              ./dalogin-quarkus
+docker build -t mbook-quarkus:local                ./mbook-quarkus
+docker build -t mbooks-quarkus:local               ./mbooks-quarkus
+docker build -t simple-service-webapp-quarkus:local ./simple-service-webapp-quarkus
+eval $(minikube docker-env --unset)
 
+# Deploy
 kubectl apply -f k8infra/quarkus-backend.yaml
 kubectl -n cinemas get pods   # wait until all Running
 
-# Seed databases
+# Seed databases (both scripts are self-contained)
 kubectl -n cinemas exec -i deploy/mysql -- mysql -uroot -prootpw < mysql_8/login.sql
 kubectl -n cinemas exec -i deploy/mysql -- mysql -uroot -prootpw < mysql_8/book.sql
-kubectl -n cinemas exec -i deploy/mysql -- mysql -uroot -prootpw < k8infra/fix-sprocs.sql
-kubectl -n cinemas exec -i deploy/mysql -- mysql -uroot -prootpw < k8infra/fix-triggers.sql
+
+# Copy pictures into the PVC
+kubectl -n cinemas cp pictures/ \
+  $(kubectl -n cinemas get pod -l app=simple-service-webapp \
+      -o jsonpath='{.items[0].metadata.name}'):/pictures/
 
 # HTTPS access for the iOS simulator
 echo "127.0.0.1 milo.crabdance.com" | sudo tee -a /etc/hosts
-kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8443:443 &
-echo "rdr pass on lo0 inet proto tcp from any to 127.0.0.1 port 443 -> 127.0.0.1 port 8443" \
-  | sudo pfctl -ef -
+sudo minikube tunnel   # keeps running — use a dedicated terminal
 ```
+
+> **Why Docker instead of qemu2?** The Docker driver (via colima) provides stable
+> networking through `minikube tunnel`, which assigns `127.0.0.1` as the external IP
+> for the ingress. No more fragile `kubectl port-forward` + `pf` redirect that dies
+> on sleep/wake. See the [Appendix in the K8s runbook](../k8infra/README-k8s-local.md#appendix-qemu2-driver-legacy)
+> if you must use qemu2.
 
 Verify:
 ```bash
@@ -205,6 +220,8 @@ Copy the freshly-built `.app` into the `appium/` directory (the relative path in
 cp -R ../SwiftCinemas/build/Build/Products/Debug-iphonesimulator/SwiftCinemas.app .
 ```
 
+#### Option A — Maven (command line)
+
 Run the tests, passing the simulator details:
 ```bash
 mvn clean test \
@@ -222,6 +239,29 @@ mvn clean test \
   -Dappium.port=4724 \
   -Dappium.host=192.168.1.100
 ```
+
+If behind a corporate proxy, use the bundled Maven settings:
+```bash
+mvn -s ../k8infra/settings-local.xml clean test \
+  -Dsim.device="iPhone 16e" -Dsim.version="26.1"
+```
+
+#### Option B — IntelliJ run configurations
+
+Shared run configurations in `.run/` are auto-detected by IntelliJ. No `mvnw` wrapper exists for `appium/` — all configs use the system `mvn` or run `java` directly.
+
+| Run configuration | Purpose |
+|-------------------|---------|
+| **appium - compile** | Compile main + test classes (`compile test-compile -DskipTests`). Prerequisite for java-direct configs. |
+| **appium - mvn test** | Run `testng.xml` via Maven Surefire |
+| **appium - mvn test (inspect)** | Run `testng-inspect.xml` (InspectUI page-source dump) |
+| **appium - java direct (testng)** | Bypass `exec-maven-plugin`: resolves classpath via `mvn dependency:build-classpath`, then runs `java … org.testng.TestNG testng.xml` directly |
+| **appium - java direct (inspect)** | Same direct approach for `testng-inspect.xml` |
+| **appium - CreateXml GUI** | Launch the `qa.ios.util.CreateXml` Swing GUI for interactive TestNG XML suite creation |
+
+> **Corporate proxy note:** Maven-type run configs set the user settings file via `myGeneralSettings` → `userSettingsFile` pointing to `$PROJECT_DIR$/k8infra/settings-local.xml`. Do **not** put `-s` or `--settings` in `cmdOptions` — IntelliJ's Maven runner misinterprets it as `-f/--file`.
+
+> **CreateXml GUI:** The classpath includes `target/test-classes` so `Class.forName()` finds test classes like `TestNavigations`. Run **appium - compile** first to populate the target directories.
 
 ### Step 7 — Check results
 
@@ -264,6 +304,8 @@ For re-runs (app already built & installed, Appium already running):
 ```bash
 cd appium && mvn clean test -Dsim.device="iPhone 16e" -Dsim.version="26.1" -Dsim.udid="<UDID>"
 ```
+
+Or use the IntelliJ run configurations: **appium - mvn test** or **appium - java direct (testng)**.
 
 ---
 

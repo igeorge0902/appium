@@ -116,6 +116,7 @@
     <li><a href="#test-flow-detail">Test Flow Deep-Dive</a></li>
     <li class="section-title">Configuration</li>
     <li><a href="#config-files">Configuration Files</a></li>
+    <li><a href="#run-configurations">IDE Run Configurations</a></li>
     <li><a href="#system-properties">System Properties</a></li>
     <li><a href="#device-detection">Device Detection</a></li>
     <li class="section-title">WDA &amp; Appium</li>
@@ -775,7 +776,7 @@ appium/
 │   │       ├── Helpers.java         # swipeScreen(), getElement(), button(), takeScreenShot()
 │   │       ├── PropertyUtils.java   # .properties file loader with static access
 │   │       ├── SystemCommands.java  # Standalone ideviceinfo runner (diagnostic)
-│   │       └── CreateXml.java       # Swing GUI for generating testng.xml (legacy tool)
+│   │       └── CreateXml.java       # Swing GUI for generating testng.xml (run via 'appium - CreateXml GUI')
 │   │
 │   ├── resources/
 │   │   ├── logback.xml              # SLF4J logging — console + rolling file appenders
@@ -1238,10 +1239,11 @@ public class TestNavigations extends TestBase { ... }</code></pre>
   <p>Loads <code>properties.properties</code> from the working directory in a static initialiser block. Provides <code>getProperty(key)</code> and <code>setProperty(key, value)</code>. Used by <code>DriverManager</code> for Appium server config and bundle ID, and by other classes for <code>ideviceinfo</code> path.</p>
 </div>
 
-<h3>CreateXml (Legacy)</h3>
+<h3>CreateXml</h3>
 <div class="card">
   <h4>File: <code>src/main/java/qa/ios/util/CreateXml.java</code></h4>
-  <p>A <strong>Swing GUI</strong> application (584 lines) for generating <code>testng.xml</code> files interactively. Provides form fields for suite name, listeners, test name, parameters, class name, include/exclude methods. Constructs <code>XmlSuite</code>/<code>XmlTest</code>/<code>XmlClass</code> objects programmatically. Legacy tool — no longer actively used; <code>testng.xml</code> and <code>testng-inspect.xml</code> are maintained manually.</p>
+  <p>A <strong>Swing GUI</strong> application for generating <code>testng.xml</code> files interactively. Provides form fields for suite name, listeners, test name, parameters, class name, include/exclude methods. Constructs <code>XmlSuite</code>/<code>XmlTest</code>/<code>XmlClass</code> objects programmatically. Uses <code>Class.forName()</code> to validate test class names — requires <code>target/test-classes</code> on the classpath.</p>
+  <p>Launch via the <strong>appium - CreateXml GUI</strong> IntelliJ run configuration (see <a href="#run-configurations">IDE Run Configurations</a>). Run <strong>appium - compile</strong> first so <code>Class.forName("TestNavigations")</code> can find the test classes.</p>
 </div>
 </section>
 
@@ -1412,6 +1414,41 @@ TestNavigations.pageObject()
 </div>
 </section>
 
+<!-- ──────── IDE RUN CONFIGURATIONS ──────── -->
+<section id="run-configurations">
+<h2>IDE Run Configurations</h2>
+<p>Shared IntelliJ IDEA run configurations live in <code>.run/</code> at the project root (version-controlled, auto-detected by IntelliJ on project open). The <code>appium/</code> module has <strong>no <code>mvnw</code> wrapper</strong> — all shell-based configs use the system <code>mvn</code> command.</p>
+
+<div class="card">
+  <h4>⚠️ Corporate Proxy Note</h4>
+  <p>The corporate proxy blocks some Maven plugin downloads (e.g. <code>exec-maven-plugin</code>). All Maven-type run configurations set the user settings file via <code>myGeneralSettings</code> → <code>MavenGeneralSettings</code> → <code>userSettingsFile</code> pointing to <code>$PROJECT_DIR$/k8infra/settings-local.xml</code> (forces HTTPS Central repo, no proxy). Do <strong>not</strong> put <code>-s</code> or <code>--settings</code> in <code>cmdOptions</code> — IntelliJ's Maven runner misinterprets it as <code>-f/--file</code>.</p>
+</div>
+
+<table>
+  <tr><th>Run Configuration</th><th>Type</th><th>Purpose</th></tr>
+  <tr><td><code>appium - compile</code></td><td>Maven</td><td><code>compile test-compile -DskipTests</code> — compiles main + test classes. <strong>Prerequisite</strong> for java-direct configs.</td></tr>
+  <tr><td><code>appium - mvn test</code></td><td>Maven</td><td><code>test</code> — runs <code>testng.xml</code> via Maven Surefire</td></tr>
+  <tr><td><code>appium - mvn test (inspect)</code></td><td>Maven</td><td><code>test -DtestngXml=testng-inspect.xml</code> — runs InspectUI suite</td></tr>
+  <tr><td><code>appium - java direct (testng)</code></td><td>Shell</td><td>Bypasses <code>exec-maven-plugin</code>: resolves classpath via <code>mvn dependency:build-classpath</code>, then runs <code>java … org.testng.TestNG testng.xml</code> directly</td></tr>
+  <tr><td><code>appium - java direct (inspect)</code></td><td>Shell</td><td>Same direct approach for <code>testng-inspect.xml</code></td></tr>
+  <tr><td><code>appium - CreateXml GUI</code></td><td>Shell</td><td>Launches the <code>qa.ios.util.CreateXml</code> Swing GUI for interactive TestNG XML suite creation. Classpath includes <code>target/test-classes</code> so <code>Class.forName()</code> finds test classes like <code>TestNavigations</code>.</td></tr>
+</table>
+
+<h3>How the shell-based configs work</h3>
+<p>The "java direct" and "CreateXml GUI" configs solve the corporate proxy problem by avoiding Maven plugins entirely at runtime:</p>
+<ol>
+  <li>Resolve the full dependency classpath: <code>mvn -s ../k8infra/settings-local.xml dependency:build-classpath -Dmdep.outputFile=/dev/stdout -q</code></li>
+  <li>Prepend <code>target/classes</code> and <code>target/test-classes</code> (compiled by <strong>appium - compile</strong>)</li>
+  <li>Run <code>java -cp &lt;classpath&gt; org.testng.TestNG testng.xml</code> (or <code>qa.ios.util.CreateXml</code>) directly</li>
+</ol>
+
+<h3>Workflow</h3>
+<ol>
+  <li>Run <strong>appium - compile</strong> to compile all classes</li>
+  <li>Run any of the other configs — they pick up the compiled classes from <code>target/</code></li>
+</ol>
+</section>
+
 <!-- ──────── SYSTEM PROPERTIES ──────── -->
 <section id="system-properties">
 <h2>System Properties</h2>
@@ -1576,7 +1613,7 @@ curl -sk https://milo.crabdance.com/mbooks-1/rest/book/movies | head -c 200
   <li>☐ Minikube running, all pods in <code>cinemas</code> namespace are <code>Running</code></li>
   <li>☐ Databases seeded (<code>login_</code> and <code>book</code>)</li>
   <li>☐ <code>milo.crabdance.com</code> in <code>/etc/hosts</code> → <code>127.0.0.1</code></li>
-  <li>☐ Port-forward: ingress 443 → 8443, pf redirect active</li>
+  <li>☐ <code>sudo minikube tunnel</code> running (assigns <code>127.0.0.1</code> to ingress)</li>
   <li>☐ <code>curl -sk https://milo.crabdance.com/mbooks-1/rest/book/movies</code> returns JSON</li>
   <li>☐ iOS app built for simulator (arm64), installed on booted simulator</li>
   <li>☐ Appium server running on port 4723</li>
@@ -1730,7 +1767,7 @@ curl -sk https://milo.crabdance.com/mbooks-1/rest/book/movies | head -c 200
   <tr><td>util</td><td>Helpers.java</td><td>139</td><td>Swipe, screenshots, element helpers</td></tr>
   <tr><td>util</td><td>PropertyUtils.java</td><td>85</td><td>Properties file loader</td></tr>
   <tr><td>util</td><td>SystemCommands.java</td><td>47</td><td>Standalone ideviceinfo diagnostic</td></tr>
-  <tr><td>util</td><td>CreateXml.java</td><td>584</td><td>Swing GUI for testng.xml generation (legacy)</td></tr>
+  <tr><td>util</td><td>CreateXml.java</td><td>584</td><td>Swing GUI for testng.xml generation (run via IntelliJ run config)</td></tr>
 </table>
 
 <h3>Test Files (src/test/java/)</h3>
@@ -1823,7 +1860,7 @@ curl -sk https://milo.crabdance.com/mbooks-1/rest/book/movies | head -c 200
 
 <div class="card priority-low">
   <h4>9. CreateXml.java uses Swing</h4>
-  <p>The 584-line Swing GUI for generating testng.xml is a legacy tool. The suite files are now maintained manually. Consider removing to reduce codebase complexity.</p>
+  <p>The Swing GUI for generating testng.xml works but requires <code>target/test-classes</code> on the classpath for <code>Class.forName()</code> validation. A dedicated <strong>appium - CreateXml GUI</strong> IntelliJ run configuration handles this — run <strong>appium - compile</strong> first. See <a href="#run-configurations">IDE Run Configurations</a>.</p>
 </div>
 </section>
 
@@ -1877,6 +1914,7 @@ lsof -i :4723</code></pre>
 
 <h3>Running the inspection suite</h3>
 <div class="card">
+<p>Use the <strong>appium - mvn test (inspect)</strong> or <strong>appium - java direct (inspect)</strong> IntelliJ run configuration, or run from the command line:</p>
 <pre><code># Run InspectUI to dump page source at each step
 mvn clean test \
   -DtestngXml=testng-inspect.xml \

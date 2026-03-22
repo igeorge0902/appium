@@ -66,31 +66,36 @@ public class TestBase extends Verify implements Constants {
 	@BeforeClass
 	public void setUp(ITestContext context) throws Exception {
 
-		try {
-			String app = context.getCurrentXmlTest().getParameter("app");
-			String device = context.getCurrentXmlTest().getParameter("device");
+		String app = context.getCurrentXmlTest().getParameter("app");
+		String device = context.getCurrentXmlTest().getParameter("device");
 
-			driver = DriverManager.startDriver(app, device, 40);
-			// In Appium 2, resetApp() is removed. Use terminateApp + activateApp instead.
-			String bundleId = PropertyUtils.getProperty("bundleid");
-			if (bundleId != null) {
-				driver.terminateApp(bundleId);
-				driver.activateApp(bundleId);
-			}
+		int maxAttempts = 12;       // 12 × 5s = 60s maximum
+		int pollIntervalMs = 5000;  // 5 seconds between retries
 
-		} catch (Exception e) {
-			Log.info("First attempt failed, retrying...", e);
-
-			String app = context.getCurrentXmlTest().getParameter("app");
-			String device = context.getCurrentXmlTest().getParameter("device");
-
-			Log.info("{} is reconnecting!", PropertyUtils.getProperty("device"));
-
-			driver = DriverManager.startDriver(app, device, 40);
-			String bundleId = PropertyUtils.getProperty("bundleid");
-			if (bundleId != null) {
-				driver.terminateApp(bundleId);
-				driver.activateApp(bundleId);
+		for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+			try {
+				Log.info("Starting driver (attempt {}/{})", attempt, maxAttempts);
+				driver = DriverManager.startDriver(app, device, 40);
+				// In Appium 2, resetApp() is removed. Use terminateApp + activateApp instead.
+				String bundleId = PropertyUtils.getProperty("bundleid");
+				if (bundleId != null) {
+					driver.terminateApp(bundleId);
+					driver.activateApp(bundleId);
+				}
+				Log.info("Driver started successfully on attempt {}", attempt);
+				break; // success — exit loop
+			} catch (Exception e) {
+				Log.warn("Attempt {}/{} failed: {}", attempt, maxAttempts, e.getMessage());
+				if (attempt == maxAttempts) {
+					throw new RuntimeException("Could not start driver after " + maxAttempts
+							+ " attempts (" + (maxAttempts * pollIntervalMs / 1000) + "s)", e);
+				}
+				try {
+					Thread.sleep(pollIntervalMs);
+				} catch (InterruptedException ie) {
+					Thread.currentThread().interrupt();
+					throw new RuntimeException("Interrupted while waiting for driver startup", ie);
+				}
 			}
 		}
 	}

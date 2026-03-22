@@ -10,10 +10,14 @@
           <include name="step1_appLaunch"/>
           <include name="step2_afterSwipe"/>
           <include name="step3_moviesScreen"/>
-          <include name="step4_afterCategories"/>
+          <include name="step4_tapCategories"/>
+          <include name="step5_tapDrama"/>
+          <include name="step6_tapMovie"/>
+          <include name="step7_tapVenue"/>
+          <include name="step8_tapDatesAndSelect"/>
+          <include name="step9_dismissAndBook"/>
         </methods>
       </class>
     </classes>
   </test>
 </suite>
-
