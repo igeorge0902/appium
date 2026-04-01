@@ -8,7 +8,7 @@ Automated UI tests for the SwiftCinemas iOS app using **Appium 2** + **XCUITest*
 > segmented control never renders, and all tests fail with `NoSuchElement`.
 >
 > See [Backend setup](#step-0--start-the-cinemas-backend) below, or the
-> [full test fix plan](../docs/appium-test-fix-plan.md) for details.
+> [full test fix plan](../.github/docs/appium-test-fix-plan.md) for details.
 
 ---
 
