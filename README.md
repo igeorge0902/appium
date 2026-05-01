@@ -43,10 +43,10 @@ condensed steps:
 
 ```bash
 # Start colima (Docker-compatible daemon — no Docker Desktop licence needed)
-colima start --cpu 4 --memory 8 --disk 60
+colima start --cpu 4 --memory 4 --disk 20
 
 # Start Minikube with the Docker driver
-minikube start --driver=docker --cpus=4 --memory=8192
+minikube start --driver=docker --cpus=4 --memory=3900
 minikube addons enable ingress
 
 # Build Quarkus artifacts (from repo root)
