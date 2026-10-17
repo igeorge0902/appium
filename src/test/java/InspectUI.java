@@ -18,14 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Inspection test — dumps the page source XML at each navigation step
- * so we can see the actual element types, names, and hierarchy on iOS 26.
- *
- * Run with:
- *   mvn clean test -f appium/pom.xml -DtestngXml=testng-inspect.xml \
- *       -Dsim.device="iPhone 16e" -Dsim.version="26.1" -Dsim.udid="..."
- *
- * Output: appium/target/page-sources/*.xml files
+ * Inspection test — dumps the page source XML at each navigation step so we can see the actual element types, names, and hierarchy on iOS
+ * 26. Run with: mvn clean test -f appium/pom.xml -DtestngXml=testng-inspect.xml \ -Dsim.device="iPhone 16e" -Dsim.version="26.1"
+ * -Dsim.udid="..." Output: appium/target/page-sources/*.xml files
  */
 @Listeners({TestListeners.class, LoggingListener.class})
 public class InspectUI extends TestBase {
@@ -36,12 +31,12 @@ public class InspectUI extends TestBase {
     }
 
     private WebElement waitAndFind(String predicateOrClassName, boolean isPredicate) {
-        if (isPredicate) {
+        if(isPredicate) {
             return waitFor().until(ExpectedConditions.presenceOfElementLocated(
-                    AppiumBy.iOSNsPredicateString(predicateOrClassName)));
+                AppiumBy.iOSNsPredicateString(predicateOrClassName)));
         }
         return waitFor().until(ExpectedConditions.presenceOfElementLocated(
-                AppiumBy.className(predicateOrClassName)));
+            AppiumBy.className(predicateOrClassName)));
     }
 
     private void dumpPageSource(String filename) {
@@ -52,7 +47,8 @@ public class InspectUI extends TestBase {
             Path outFile = outDir.resolve(filename);
             Files.writeString(outFile, source);
             Log.info("Page source written to: {}", outFile.toAbsolutePath());
-        } catch (IOException e) {
+        }
+        catch(IOException e) {
             Log.error("Failed to write page source: {}", filename, e);
         }
     }
@@ -60,13 +56,16 @@ public class InspectUI extends TestBase {
     private void logElements(String type) {
         List<WebElement> elements = driver.findElements(AppiumBy.className(type));
         Log.info("=== {} elements ({}) ===", type, elements.size());
-        for (int i = 0; i < elements.size(); i++) {
+        for(int i = 0; i < elements.size(); i++) {
             try {
                 WebElement el = elements.get(i);
-                Log.info("  [{}] label='{}' name='{}' value='{}' visible={}",
-                        i, el.getAttribute("label"), el.getAttribute("name"),
-                        el.getAttribute("value"), el.getAttribute("visible"));
-            } catch (Exception e) {
+                Log.info(
+                    "  [{}] label='{}' name='{}' value='{}' visible={}",
+                    i, el.getAttribute("label"), el.getAttribute("name"),
+                    el.getAttribute("value"), el.getAttribute("visible")
+                );
+            }
+            catch(Exception e) {
                 Log.info("  [{}] <stale>", i);
             }
         }
@@ -84,7 +83,7 @@ public class InspectUI extends TestBase {
         Log.info("====== STEP 2: After swipe ======");
         HomeScreen.swipe();
         waitFor().until(ExpectedConditions.presenceOfElementLocated(
-                AppiumBy.iOSNsPredicateString("label == 'Movies' AND visible == true")));
+            AppiumBy.iOSNsPredicateString("label == 'Movies' AND visible == true")));
         dumpPageSource("02-after-swipe.xml");
     }
 
@@ -95,7 +94,7 @@ public class InspectUI extends TestBase {
 
         // First confirm we're on the Movies screen by waiting for the search field
         waitFor().until(ExpectedConditions.presenceOfElementLocated(
-                AppiumBy.className("XCUIElementTypeSearchField")));
+            AppiumBy.className("XCUIElementTypeSearchField")));
         Log.info("Search field found — on Movies screen");
 
         // Dump immediately to see the screen state
@@ -104,8 +103,8 @@ public class InspectUI extends TestBase {
         // Now wait for the table to populate (cells appear when API data loads).
         // This is a network call to the backend — allow 10 s.
         new WebDriverWait(driver, Duration.ofSeconds(10), Duration.ofMillis(500))
-                .until(ExpectedConditions.presenceOfElementLocated(
-                        AppiumBy.iOSNsPredicateString("type == 'XCUIElementTypeCell' AND visible == true")));
+            .until(ExpectedConditions.presenceOfElementLocated(
+                AppiumBy.iOSNsPredicateString("type == 'XCUIElementTypeCell' AND visible == true")));
         Log.info("Table cells found — data loaded");
 
         dumpPageSource("03-movies-screen.xml");
@@ -118,7 +117,7 @@ public class InspectUI extends TestBase {
         // The segmented control is in the table section header with buttons: Reset, Categories, NA
         // Use class chain to target the 2nd button inside the segmented control
         WebElement categories = waitFor().until(ExpectedConditions.elementToBeClickable(
-                AppiumBy.iOSClassChain("**/XCUIElementTypeSegmentedControl/XCUIElementTypeButton[`label == 'Categories'`]")));
+            AppiumBy.iOSClassChain("**/XCUIElementTypeSegmentedControl/XCUIElementTypeButton[`label == 'Categories'`]")));
         categories.click();
         // Wait for the category list to appear
         waitAndFind("label == 'Drama'", true);
@@ -165,10 +164,12 @@ public class InspectUI extends TestBase {
         dumpPageSource("08-dates-popover.xml");
 
         // Scroll picker to next value (row 0 = "Select date", row 1 = actual date)
-        driver.executeScript("mobile: selectPickerWheelValue", Map.of(
+        driver.executeScript(
+            "mobile: selectPickerWheelValue", Map.of(
                 "element", picker,
                 "order", "next"
-        ));
+            )
+        );
 
         String selected = picker.getAttribute("value");
         Log.info("Picker value after scroll: '{}'", selected);
@@ -191,11 +192,12 @@ public class InspectUI extends TestBase {
         logElements("XCUIElementTypeCollectionView");
 
         // Look for seat labels
-        for (String seat : new String[]{"A1", "A2", "A3", "B1", "B5"}) {
+        for(String seat: new String[]{"A1", "A2", "A3", "B1", "B5"}) {
             try {
                 WebElement el = driver.findElement(AppiumBy.iOSNsPredicateString("label == '" + seat + "'"));
                 Log.info("  Seat {} found, visible={}", seat, el.getAttribute("visible"));
-            } catch (Exception e) {
+            }
+            catch(Exception e) {
                 Log.info("  Seat {} NOT found", seat);
             }
         }

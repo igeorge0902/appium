@@ -1,6 +1,6 @@
 # Appium TestNG — SwiftCinemas iOS UI Tests
 
-Automated UI tests for the SwiftCinemas iOS app using **Appium 2** + **XCUITest** driver + **TestNG**.
+Automated UI tests for the SwiftCinemas iOS app using **Appium 3** + **XCUITest** driver + **TestNG**.
 
 > **⚠️ Backend required:** The test flow navigates Movies → Categories → Venues → Seats → Checkout.
 > Every screen after the home page fetches data from the backend API. Without a running
@@ -16,20 +16,20 @@ Automated UI tests for the SwiftCinemas iOS app using **Appium 2** + **XCUITest*
 
 Install these before running the tests:
 
-| Tool | Install command | Verify |
-|------|----------------|--------|
-| **Java 17** | (via SDKMAN, Homebrew, or Oracle) | `java -version` |
-| **Maven 3.9+** | `brew install maven` | `mvn -version` |
-| **Xcode 16+** | Mac App Store | `xcodebuild -version` |
-| **Xcode CLI tools** | `xcode-select --install` | `xcode-select -p` |
-| **CocoaPods** | `gem install cocoapods` | `pod --version` |
-| **Node.js 18+** | `brew install node` | `node -v` |
-| **Appium 3** | `npm install -g appium` | `appium -v` |
-| **XCUITest driver** | `appium driver install xcuitest` | `appium driver list --installed` |
-| **Docker CLI** | `brew install docker` | `docker --version` |
-| **colima** | `brew install colima` | `colima status` |
-| **Minikube** | `brew install minikube` | `minikube version` |
-| **kubectl** | `brew install kubectl` | `kubectl version --client` |
+| Tool                | Install command                   | Verify                           |
+|---------------------|-----------------------------------|----------------------------------|
+| **Java 17**         | (via SDKMAN, Homebrew, or Oracle) | `java -version`                  |
+| **Maven 3.9+**      | `brew install maven`              | `mvn -version`                   |
+| **Xcode 16+**       | Mac App Store                     | `xcodebuild -version`            |
+| **Xcode CLI tools** | `xcode-select --install`          | `xcode-select -p`                |
+| **Carthage**        | `brew install carthage`           | `carthage version`               |
+| **Node.js 18+**     | `brew install node`               | `node -v`                        |
+| **Appium 3**        | `npm install -g appium`           | `appium -v`                      |
+| **XCUITest driver** | `appium driver install xcuitest`  | `appium driver list --installed` |
+| **Docker CLI**      | `brew install docker`             | `docker --version`               |
+| **colima**          | `brew install colima`             | `colima status`                  |
+| **Minikube**        | `brew install minikube`           | `minikube version`               |
+| **kubectl**         | `brew install kubectl`            | `kubectl version --client`       |
 
 ---
 
@@ -88,33 +88,26 @@ sudo minikube tunnel   # keeps running — use a dedicated terminal
 > if you must use qemu2.
 
 Verify:
+
 ```bash
 curl -sk https://milo.crabdance.com/mbooks-1/rest/book/movies | head -c 200
 # Should return JSON array of movies
 ```
 
-### Step 1 — Install CocoaPods dependencies
+### Step 1 — iOS dependencies
 
-The iOS app depends on several pods (Braintree, Firebase, Realm, etc.). These must be installed before building.
-
-```bash
-cd ../SwiftCinemas
-pod install
-```
-
-Expected output: `Pod installation complete! There are 8 dependencies from the Podfile and 27 total pods installed.`
-
-> **Note:** Always open the `.xcworkspace` (not `.xcodeproj`) after running `pod install`.
+The app uses **Carthage** (`../SwiftCinemas/Cartfile`). Make sure the frameworks are built once (see the iOS project for
+details); the Appium tests do not depend on how they are resolved.
 
 ### Step 2 — Build the iOS app for the simulator
 
-Build the `SwiftCinemas` scheme from the `SwiftLoginScreen.xcworkspace` for the iOS Simulator:
+Build the `SwiftCinemas` scheme from `SwiftCinemas.xcodeproj` for the iOS Simulator:
 
 ```bash
 cd ../SwiftCinemas
 
 xcodebuild build \
-  -workspace SwiftLoginScreen.xcworkspace \
+  -project SwiftCinemas.xcodeproj \
   -scheme SwiftCinemas \
   -sdk iphonesimulator \
   -configuration Debug \
@@ -124,47 +117,52 @@ xcodebuild build \
   CODE_SIGNING_ALLOWED=NO
 ```
 
-The `.app` bundle will be at:
+The `.app` bundle (bundle id `com.georgegaspar.SwiftLoginScreen`) will be at:
+
 ```
 SwiftCinemas/build/Build/Products/Debug-iphonesimulator/SwiftCinemas.app
 ```
 
-> **First build** takes several minutes (compiles gRPC, Firebase, BoringSSL, etc.).
-> Subsequent builds are incremental and much faster.
+> **First build** takes several minutes. Subsequent builds are incremental and much faster.
 
 #### Build flags explained
 
-| Flag | Purpose |
-|------|---------|
-| `-sdk iphonesimulator` | Build for simulator, not a real device |
-| `ONLY_ACTIVE_ARCH=YES` | Build only for the host architecture (arm64 on Apple Silicon) |
-| `CODE_SIGNING_ALLOWED=NO` | Skip code signing (not needed for simulator) |
-| `-derivedDataPath build` | Keep build artifacts in-tree instead of `~/Library/Developer/Xcode/DerivedData` |
-| `-quiet` | Suppress verbose build output; errors still shown |
+| Flag                      | Purpose                                                                         |
+|---------------------------|---------------------------------------------------------------------------------|
+| `-sdk iphonesimulator`    | Build for simulator, not a real device                                          |
+| `ONLY_ACTIVE_ARCH=YES`    | Build only for the host architecture (arm64 on Apple Silicon)                   |
+| `CODE_SIGNING_ALLOWED=NO` | Skip code signing (not needed for simulator)                                    |
+| `-derivedDataPath build`  | Keep build artifacts in-tree instead of `~/Library/Developer/Xcode/DerivedData` |
+| `-quiet`                  | Suppress verbose build output; errors still shown                               |
 
 ### Step 3 — Create and boot a simulator
 
 List available simulators:
+
 ```bash
 xcrun simctl list devices available | grep iPhone
 ```
 
 Boot one (use the UDID from the listing):
+
 ```bash
 xcrun simctl boot <UDID>
 ```
 
 Open the Simulator UI:
+
 ```bash
 open -a Simulator
 ```
 
 Verify it's booted:
+
 ```bash
 xcrun simctl list devices booted
 ```
 
 Example output:
+
 ```
 -- iOS 26.1 --
     iPhone 16e (D7A0E565-5DEF-488A-B770-4A35578775FE) (Booted)
@@ -177,6 +175,7 @@ xcrun simctl install booted ../SwiftCinemas/build/Build/Products/Debug-iphonesim
 ```
 
 Or targeting a specific simulator by UDID:
+
 ```bash
 xcrun simctl install <UDID> ../SwiftCinemas/build/Build/Products/Debug-iphonesimulator/SwiftCinemas.app
 ```
@@ -188,11 +187,13 @@ appium --relaxed-security --log-timestamp --local-timezone
 ```
 
 Or on a custom port/address:
+
 ```bash
 appium -p 4724 -a 0.0.0.0 --relaxed-security
 ```
 
 Verify it's running:
+
 ```bash
 curl http://127.0.0.1:4723/status
 # {"value":{"ready":true,"message":"The server is ready to accept new connections","build":{"version":"3.2.2"}}}
@@ -202,110 +203,133 @@ curl http://127.0.0.1:4723/status
 
 #### Useful Appium CLI flags
 
-| Flag | Purpose |
-|------|---------|
-| `-p <port>` | Listen on a specific port (default: `4723`) |
-| `-a <address>` | Bind to a specific IP (default: `0.0.0.0`) |
-| `--base-path <path>` | Set the base path (default: `/`) |
-| `--relaxed-security` | Allow insecure features (needed for some XCUITest operations) |
-| `--log <file>` | Write server log to a file |
-| `--log-timestamp` | Add timestamps to log output |
-| `--local-timezone` | Use local timezone for timestamps |
-| `--log-level <level>` | Set log level: `debug`, `info`, `warn`, `error` |
+| Flag                  | Purpose                                                       |
+|-----------------------|---------------------------------------------------------------|
+| `-p <port>`           | Listen on a specific port (default: `4723`)                   |
+| `-a <address>`        | Bind to a specific IP (default: `0.0.0.0`)                    |
+| `--base-path <path>`  | Set the base path (default: `/`)                              |
+| `--relaxed-security`  | Allow insecure features (needed for some XCUITest operations) |
+| `--log <file>`        | Write server log to a file                                    |
+| `--log-timestamp`     | Add timestamps to log output                                  |
+| `--local-timezone`    | Use local timezone for timestamps                             |
+| `--log-level <level>` | Set log level: `debug`, `info`, `warn`, `error`               |
 
-### Step 6 — Copy the app and run the tests
+### Step 6 — Run the tests
 
-Copy the freshly-built `.app` into the `appium/` directory (the relative path in `testng.xml` resolves from here):
-```bash
-cp -R ../SwiftCinemas/build/Build/Products/Debug-iphonesimulator/SwiftCinemas.app .
-```
+The app is already installed on the simulator (Step 4), so no `.app` path is needed: the driver
+launches it by bundle id. Resolution order is `APP_PATH` → TestNG `app` parameter (only if the file
+exists) → installed app via `BUNDLE_ID` (default from `properties.properties`). If the app is not
+installed on the target simulator, the run fails fast with a `simctl install` hint.
 
 #### Option A — Maven (command line)
 
-Run the tests, passing the simulator details:
+Run against the booted simulator (auto-discovered via `simctl` when only one is booted):
+
 ```bash
-mvn clean test \
-  -Dsim.device="iPhone 16e" \
-  -Dsim.version="26.1" \
-  -Dsim.udid="D7A0E565-5DEF-488A-B770-4A35578775FE"
+cd appium
+mvn clean test
 ```
 
-If Appium is on a non-default port/host:
+Pin a specific simulator and bundle id (system properties or env vars — same keys):
+
 ```bash
 mvn clean test \
   -Dsim.device="iPhone 16e" \
   -Dsim.version="26.1" \
   -Dsim.udid="D7A0E565-5DEF-488A-B770-4A35578775FE" \
-  -Dappium.port=4724 \
-  -Dappium.host=192.168.1.100
+  -Dbundle.id=com.georgegaspar.SwiftLoginScreen
+
+# equivalent, CI style
+SIM_UDID=D7A0E565-5DEF-488A-B770-4A35578775FE \
+BUNDLE_ID=com.georgegaspar.SwiftLoginScreen \
+mvn -B clean test
+```
+
+Let Appium (re)install a fresh build instead of using the installed app:
+
+```bash
+mvn clean test -Dsim.udid="<UDID>" \
+  -Dapp.path=../SwiftCinemas/build/Build/Products/Debug-iphonesimulator/SwiftCinemas.app
+```
+
+If Appium is on a non-default port/host:
+
+```bash
+mvn clean test -Dsim.udid="<UDID>" -Dappium.port=4724 -Dappium.host=192.168.1.100
 ```
 
 If behind a corporate proxy, use the bundled Maven settings:
+
 ```bash
-mvn -s ../k8infra/settings-local.xml clean test \
-  -Dsim.device="iPhone 16e" -Dsim.version="26.1"
+mvn -s ../k8infra/settings-local.xml clean test -Dsim.udid="<UDID>"
 ```
 
 #### Option B — IntelliJ run configurations
 
-Shared run configurations in `.run/` are auto-detected by IntelliJ. No `mvnw` wrapper exists for `appium/` — all configs use the system `mvn` or run `java` directly.
+Shared run configurations in `.run/` are auto-detected by IntelliJ. No `mvnw` wrapper exists for `appium/` — all configs
+use the system `mvn` or run `java` directly.
 
-| Run configuration | Purpose |
-|-------------------|---------|
-| **appium - compile** | Compile main + test classes (`compile test-compile -DskipTests`). Prerequisite for java-direct configs. |
-| **appium - mvn test** | Run `testng.xml` via Maven Surefire |
-| **appium - mvn test (inspect)** | Run `testng-inspect.xml` (InspectUI page-source dump) |
-| **appium - java direct (testng)** | Bypass `exec-maven-plugin`: resolves classpath via `mvn dependency:build-classpath`, then runs `java … org.testng.TestNG testng.xml` directly |
-| **appium - java direct (inspect)** | Same direct approach for `testng-inspect.xml` |
-| **appium - CreateXml GUI** | Launch the `qa.ios.util.CreateXml` Swing GUI for interactive TestNG XML suite creation |
+| Run configuration                  | Purpose                                                                                                                                       |
+|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| **appium - compile**               | Compile main + test classes (`compile test-compile -DskipTests`). Prerequisite for java-direct configs.                                       |
+| **appium - mvn test**              | Run `testng.xml` via Maven Surefire                                                                                                           |
+| **appium - mvn test (inspect)**    | Run `testng-inspect.xml` (InspectUI page-source dump)                                                                                         |
+| **appium - java direct (testng)**  | Bypass `exec-maven-plugin`: resolves classpath via `mvn dependency:build-classpath`, then runs `java … org.testng.TestNG testng.xml` directly |
+| **appium - java direct (inspect)** | Same direct approach for `testng-inspect.xml`                                                                                                 |
+| **appium - CreateXml GUI**         | Launch the `qa.ios.util.CreateXml` Swing GUI for interactive TestNG XML suite creation                                                        |
 
-> **Corporate proxy note:** Maven-type run configs set the user settings file via `myGeneralSettings` → `userSettingsFile` pointing to `$PROJECT_DIR$/k8infra/settings-local.xml`. Do **not** put `-s` or `--settings` in `cmdOptions` — IntelliJ's Maven runner misinterprets it as `-f/--file`.
+> **Corporate proxy note:** Maven-type run configs set the user settings file via `myGeneralSettings` →
+> `userSettingsFile` pointing to `$PROJECT_DIR$/k8infra/settings-local.xml`. Do **not** put `-s` or `--settings` in
+> `cmdOptions` — IntelliJ's Maven runner misinterprets it as `-f/--file`.
 
-> **CreateXml GUI:** The classpath includes `target/test-classes` so `Class.forName()` finds test classes like `TestNavigations`. Run **appium - compile** first to populate the target directories.
+> **CreateXml GUI:** The classpath includes `target/test-classes` so `Class.forName()` finds test classes like
+> `TestNavigations`. Run **appium - compile** first to populate the target directories.
 
 ### Step 7 — Check results
 
 Test reports are at:
+
 ```
 appium/target/surefire-reports/
 ```
+
+Appium server log: the terminal running Appium, or the file given with `--log`.
 
 ---
 
 ## Quick reference — all-in-one
 
-Once everything is installed, the full pipeline is:
+Once everything is installed, the full pipeline is (run from `appium/`):
 
 ```bash
-# 1. Pods
-cd ../SwiftCinemas && pod install
+# 1. Build the app
+(cd ../SwiftCinemas && xcodebuild build -project SwiftCinemas.xcodeproj -scheme SwiftCinemas \
+  -sdk iphonesimulator -configuration Debug -derivedDataPath build -quiet \
+  ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO)
 
-# 2. Build
-xcodebuild build -workspace SwiftLoginScreen.xcworkspace -scheme SwiftCinemas \
-  -sdk iphonesimulator -derivedDataPath build -quiet \
-  ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO
-
-# 3. Sim
+# 2. Boot the simulator
 xcrun simctl boot <UDID>
+xcrun simctl bootstatus <UDID> -b
 
-# 4. Install app
-xcrun simctl install <UDID> build/Build/Products/Debug-iphonesimulator/SwiftCinemas.app
+# 3. Install the app
+xcrun simctl install <UDID> ../SwiftCinemas/build/Build/Products/Debug-iphonesimulator/SwiftCinemas.app
 
-# 5. Appium (in a separate terminal)
-appium --relaxed-security
+# 4. Appium (in a separate terminal), then wait until ready
+appium --relaxed-security --log-timestamp --local-timezone
+curl -s http://127.0.0.1:4723/status
 
-# 6. Tests
-cd ../appium
-cp -R ../SwiftCinemas/build/Build/Products/Debug-iphonesimulator/SwiftCinemas.app .
-mvn clean test -Dsim.device="iPhone 16e" -Dsim.version="26.1" -Dsim.udid="<UDID>"
+# 5. Tests — launches the installed app by bundle id
+SIM_UDID=<UDID> mvn clean test
 ```
 
 For re-runs (app already built & installed, Appium already running):
+
 ```bash
-cd appium && mvn clean test -Dsim.device="iPhone 16e" -Dsim.version="26.1" -Dsim.udid="<UDID>"
+SIM_UDID=<UDID> mvn clean test
 ```
 
 Or use the IntelliJ run configurations: **appium - mvn test** or **appium - java direct (testng)**.
+CI runs the same flow on a dedicated, throw-away simulator — see `.github/mobile-smoke-test.yaml`.
 
 ---
 
@@ -324,17 +348,20 @@ This all happens automatically when you create a session. The first run takes lo
 
 ### Important: do NOT set `webDriverAgentUrl` for simulators
 
-Setting the `webDriverAgentUrl` capability tells Appium: "WDA is already running at this URL — don't build or start it, just connect." If nothing is actually listening there, you get:
+Setting the `webDriverAgentUrl` capability tells Appium: "WDA is already running at this URL — don't build or start it,
+just connect." If nothing is actually listening there, you get:
 
 ```
 ETIMEDOUT 192.168.0.103:8100
 ```
 
-The `DriverManager` is configured to let Appium handle WDA automatically (`usePreinstalledWDA: false`, no `webDriverAgentUrl`).
+The `DriverManager` is configured to let Appium handle WDA automatically (`usePreinstalledWDA: false`, no
+`webDriverAgentUrl`).
 
 ### WDA build cache
 
-After the first successful session, WDA is cached. Subsequent sessions reuse the cached build and start much faster. If WDA seems stuck:
+After the first successful session, WDA is cached. Subsequent sessions reuse the cached build and start much faster. If
+WDA seems stuck:
 
 ```bash
 # Clear the WDA build cache
@@ -350,29 +377,63 @@ xcrun simctl uninstall <UDID> com.facebook.WebDriverAgentRunner.xctrunner
 
 ### Files
 
-| File | Purpose |
-|------|---------|
-| `testng.xml` | Test suite — device type, app path (relative), test classes to run |
-| `properties.properties` | Bundle ID, Appium server connection, ideviceinfo path |
-| `pom.xml` | Maven dependencies, surefire plugin config, default sim/appium properties |
-| `src/resources/logback.xml` | Logging configuration (SLF4J + Logback) |
+| File                        | Purpose                                                                    |
+|-----------------------------|----------------------------------------------------------------------------|
+| `testng.xml`                | Test suite — device type, app path (relative), test classes to run         |
+| `properties.properties`     | Bundle ID, Appium server connection, ideviceinfo path                      |
+| `pom.xml`                   | Maven dependencies, surefire config (`-D` flags reach tests automatically) |
+| `src/resources/logback.xml` | Logging configuration (SLF4J + Logback)                                    |
 
-### System properties (pass via `-D`)
+### Runtime properties
 
-| Property | Default | Purpose |
-|----------|---------|---------|
-| `sim.device` | `iPhone 16 Pro` | Simulator device name |
-| `sim.version` | `26.1` | iOS version |
-| `sim.udid` | *(empty)* | Simulator UDID (recommended — avoids name ambiguity) |
-| `appium.host` | `127.0.0.1` | Appium server host |
-| `appium.port` | `4723` | Appium server port |
-| `appium.basePath` | `/` | Appium server base path |
+Every key is resolved by `PropertyUtils` in this order (first non-blank wins):
 
-System properties override `properties.properties` values, which override hardcoded defaults.
+1. JVM system property: `-Dkey=value`
+2. Environment variable: key upper-cased, `.`/`-` → `_` (e.g. `appium.port` → `APPIUM_PORT`)
+3. `properties.properties`
+4. Code default
+
+Blank values and unresolved Maven placeholders (`${...}`) count as *unset*, so empty pom defaults never mask env vars.
+Non-numeric ports and missing app bundles fail fast with a message naming the key.
+URL parsing and connection errors propagate from Java and Appium without custom validation.
+
+| Property          | Env var           | Default                                     | Purpose                                                                               |
+|-------------------|-------------------|---------------------------------------------|---------------------------------------------------------------------------------------|
+| `sim.device`      | `SIM_DEVICE`      | booted simulator → `sim.defaultDevice`     | Simulator device name                                                                 |
+| `sim.defaultDevice` | `SIM_DEFAULTDEVICE` | `iPhone 16 Pro` (`properties.properties`) | Fallback device name; required when no device name is configured or discovered |
+| `sim.version`     | `SIM_VERSION`     | booted simulator → latest                   | iOS version                                                                           |
+| `sim.udid`        | `SIM_UDID`        | booted simulator                            | Simulator UDID; when set, forces simulator mode                                       |
+| `app.path`        | `APP_PATH`        | TestNG `app` parameter (if file exists)     | Optional `.app` bundle (absolute or relative to `appium/`); explicit value must exist |
+| `appium.host`     | `APPIUM_HOST`     | `127.0.0.1`                                 | Appium server host                                                                    |
+| `appium.port`     | `APPIUM_PORT`     | `4723`                                      | Appium server port (1–65535)                                                          |
+| `appium.basePath` | `APPIUM_BASEPATH` | `/`                                         | Appium server base path                                                               |
+| `bundle.id`       | `BUNDLE_ID`       | legacy `bundleid` (`properties.properties`) | App bundle id; launches the installed app when no `.app` is given                     |
+| `ideviceinfo`     | `IDEVICEINFO`     | `ideviceinfo`                               | Path to libimobiledevice `ideviceinfo` (optional)                                     |
+
+**Simulator auto-discovery:** if none of `sim.device`/`sim.version`/`sim.udid` is set, the booted simulator
+(`xcrun simctl list devices booted`, highest iOS runtime) is used. Explicit values are never mixed with discovered ones.
+The fallback device name comes from `sim.defaultDevice` in `properties.properties`; it does not disable auto-discovery.
+Like other properties, it can be overridden using `-Dsim.defaultDevice` or `SIM_DEFAULTDEVICE`.
+
+```bash
+# Local: boot a simulator, then just
+mvn clean test
+# CI: app pre-installed on a dedicated simulator (no APP_PATH)
+xcrun simctl install <UDID> /path/to/App.app
+SIM_UDID=<UDID> BUNDLE_ID=com.georgegaspar.SwiftLoginScreen mvn -B clean test
+# Or let Appium install a build
+SIM_UDID=<UDID> APP_PATH=/path/to/App.app mvn -B clean test
+```
+
+**App resolution (simulator):** `APP_PATH` → TestNG `app` parameter (only if the file exists, otherwise a warning) →
+installed app launched by bundle id. With a known UDID, the bundle id is checked via `xcrun simctl get_app_container`
+and the run fails fast with an install hint if the app is missing. See `.github/mobile-smoke-test.yaml` for the CI flow.
 
 ### Simulator vs. real device
 
-`DriverManager` auto-detects: if `ideviceinfo` finds a connected USB device, it uses real-device capabilities (UDID, signing identity, `xcodeOrgId`). Otherwise it falls back to simulator mode with the `.app` bundle path from `testng.xml`.
+`DriverManager` auto-detects: if `ideviceinfo` finds a connected USB device (and `sim.udid` is not set), it uses
+real-device capabilities (UDID, signing identity, `xcodeOrgId`). If `ideviceinfo` is not installed (typical on CI) or
+no device is attached, it uses simulator mode.
 
 ---
 
@@ -400,6 +461,7 @@ The `TestNavigations.pageObject()` test exercises:
 ### `NoSuchElement` during test execution
 
 The app launched successfully but the UI element wasn't found. Possible causes:
+
 - Screen layout differs from expected (different device size, iOS version)
 - Animation not finished — increase implicit wait or add explicit waits
 - App state changed — the element locators may need updating
@@ -417,6 +479,7 @@ lsof -i :4723
 ### Wrong architecture
 
 The `.app` binary must match the simulator platform:
+
 - **Apple Silicon Mac** (M1/M2/M3/M4) → `arm64` simulator build
 - **Intel Mac** → `x86_64` simulator build
 
@@ -428,14 +491,18 @@ Build with `ONLY_ACTIVE_ARCH=YES` to match the host machine.
 
 ## Dependencies
 
-| Library | Version | Purpose |
-|---------|---------|---------|
-| Appium Java Client | 9.3.0 | iOS automation (W3C protocol, XCUITest) |
-| Selenium | 4.27.0 | WebDriver foundation |
-| TestNG | 7.10.2 | Test framework + reporting |
-| SLF4J + Logback | 2.0.16 / 1.5.12 | Logging |
-| Commons IO | 2.18.0 | Screenshot file handling |
-| Commons Lang | 3.17.0 | String utilities |
+| Library            | Version        | Purpose                                 |
+|--------------------|----------------|-----------------------------------------|
+| Appium Java Client | 11.0.0         | iOS automation (W3C protocol, XCUITest) |
+| Selenium           | 4.51.0         | WebDriver foundation (aligned via BOM)  |
+| TestNG             | 7.12.0         | Test framework + reporting              |
+| SLF4J + Logback    | 2.0.20 / 1.6.5 | Logging                                 |
+| Commons IO         | 2.22.0         | Screenshot file handling                |
+| Commons Lang       | 3.21.0         | String utilities                        |
+
+Build plugins: `maven-compiler-plugin` 3.16.0 (Java 17), `maven-surefire-plugin` 3.5.6.
+Java client 11 requires an **Appium 3** server. Surefire is intentionally kept on 3.5.x:
+3.6 runs TestNG through the JUnit Platform provider, so upgrade it deliberately.
 
 ## Migration notes (from original project)
 

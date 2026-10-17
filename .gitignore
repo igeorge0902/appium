@@ -5,4 +5,4 @@
 target
 log
 test-output
-SwiftLoginScreen.app
+*.app

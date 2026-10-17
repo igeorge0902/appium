@@ -1,11 +1,13 @@
 package qa.ios.navigation;
 
 import qa.ios.util.Helpers;
+
 public class HomeScreen {
-	public static HomeScreen swipe() {
 
-		Helpers.swipeScreen();
+    public static HomeScreen swipe() {
 
-	return new HomeScreen();
-	}
+        Helpers.swipeScreen();
+
+        return new HomeScreen();
+    }
 }

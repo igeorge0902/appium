@@ -1,0 +1,124 @@
+name: Appium iOS E2E Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  ios-e2e-tests:
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      # Step 1: Checkout the test automation code
+      - name: Checkout Test Repository
+        uses: actions/checkout@v4
+        with:
+          path: test-automation-repo
+
+      # Step 2: Checkout your App repository
+      - name: Checkout Application Repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'YOUR_GITHUB_USERNAME/YOUR_APP_REPO_NAME' # Update this
+          token: ${{ secrets.DEPENDENCY_REPO_TOKEN }}
+          path: app-repo
+
+      # Step 3: Setup Java Environment
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Step 4: Setup Node.js for Appium
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      # Step 5: Install Appium & XCUITest Driver
+      - name: Install Appium and Drivers
+        run: |
+          npm install -g appium@latest
+          appium driver install xcuitest
+          appium driver update xcuitest
+
+      # Step 6: Select the active Xcode Version
+      # macOS runners have multiple Xcode versions installed. You can pick one if needed.
+      - name: Select Xcode Version
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+          xcodebuild -version
+
+      # Step 7: Build the iOS App for the Simulator
+      # This compiles a development .app build into a dedicated output directory
+      - name: Build iOS App with xcodebuild
+        run: |
+          cd app-repo
+
+          # If your app uses CocoaPods, uncomment the following two lines:
+          # pod install
+          # xcodebuild -workspace YourApp.xcworkspace \
+
+          # If using plain Xcode project or Swift Package Manager:
+          xcodebuild -project YourApp.xcodeproj \
+            -scheme YourAppScheme \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -derivedDataPath build_output \
+            clean build
+
+      # Step 8: Create, boot and install the app on a dedicated simulator.
+      # The tests launch the pre-installed app by BUNDLE_ID (no APP_PATH needed).
+      - name: Prepare dedicated simulator
+        env:
+          SIM_DEVICE_TYPE: 'iPhone 16 Pro'   # Update to a device type available on the runner
+          APP_BUNDLE: ${{ github.workspace }}/app-repo/build_output/Build/Products/Debug-iphonesimulator/YourApp.app
+        run: |
+          UDID=$(xcrun simctl create appium-ci-${{ github.run_id }} "$SIM_DEVICE_TYPE")
+          echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl install "$UDID" "$APP_BUNDLE"
+
+      # Step 9: Start Appium in the background and wait until it is ready
+      - name: Start Appium Server
+        run: |
+          nohup appium --log "$GITHUB_WORKSPACE/appium.log" > /dev/null 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:4723/status > /dev/null && exit 0
+            sleep 2
+          done
+          echo "Appium did not start"; cat "$GITHUB_WORKSPACE/appium.log"; exit 1
+
+      # Step 10: Run Appium Tests via Maven (SIM_UDID comes from $GITHUB_ENV)
+      - name: Run Appium Tests
+        working-directory: test-automation-repo
+        run: mvn -B clean test
+        env:
+          BUNDLE_ID: com.georgegaspar.SwiftLoginScreen   # Update to your app's bundle id
+          APPIUM_HOST: 127.0.0.1
+          APPIUM_PORT: '4723'
+
+      # Step 11: Upload Logs on Failure
+      - name: Upload Appium Logs on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-execution-logs
+          path: |
+            ${{ github.workspace }}/appium.log
+            test-automation-repo/target/surefire-reports
+
+      # Step 12: Always remove the dedicated simulator
+      - name: Delete simulator
+        if: always()
+        run: |
+          if [ -n "${SIM_UDID:-}" ]; then
+            xcrun simctl shutdown "$SIM_UDID" || true
+            xcrun simctl delete "$SIM_UDID" || true
+          fi

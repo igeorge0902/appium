@@ -2,15 +2,15 @@ package qa.ios.testng;
 
 
 /**
-* @author <a href='mailto:gadigeppa.code@gmail.com'>Gadigeppa Jattennavar</a>
-*/
-public class VerificationError extends Error{
-	
-private static final long serialVersionUID = 8247563849457669512L;
+ * @author <a href='mailto:gadigeppa.code@gmail.com'>Gadigeppa Jattennavar</a>
+ */
+public class VerificationError extends Error {
 
-public VerificationError(String message){
-	
-super(message);
+    private static final long serialVersionUID = 8247563849457669512L;
 
-	}
+    public VerificationError(String message) {
+
+        super(message);
+
+    }
 }

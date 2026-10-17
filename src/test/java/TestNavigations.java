@@ -1,4 +1,3 @@
-
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import qa.ios.base.CaptureScreenshotOnFailureListener;
@@ -15,15 +14,15 @@ public class TestNavigations extends TestBase {
 
     @Test(alwaysRun = true)
     public void pageObject() throws Exception {
-    	
-    	HomeScreen.swipe();
-    	//Menu.withoutSignedIn();
-    	//Menu.logIn();
-		SelectMovieFromCategory.movieFromCategory();
-		//VenueDetails.scrollOnDetails();
-		//VenueDetails.playGarnierMovie();
-		VenueDetails.selectPickerDate();
-		VenueDetails.bookChair();
+
+        HomeScreen.swipe();
+        //Menu.withoutSignedIn();
+        //Menu.logIn();
+        SelectMovieFromCategory.movieFromCategory();
+        //VenueDetails.scrollOnDetails();
+        //VenueDetails.playGarnierMovie();
+        VenueDetails.selectPickerDate();
+        VenueDetails.bookChair();
 
     }
 }

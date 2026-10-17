@@ -12,170 +12,168 @@ import org.testng.Reporter;
 import qa.ios.base.TestBase;
 
 public class TestListeners extends TestBase implements ITestListener, ISuiteListener, IInvokedMethodListener {
-	
 
-	// This belongs to ISuiteListener and will execute before the Suite start
 
-	@Override
+    // This belongs to ISuiteListener and will execute before the Suite start
 
-	public void onStart(ISuite arg0) {
+    @Override
 
-		Reporter.log("About to begin executing Suite " + arg0.getName(), true);
+    public void onStart(ISuite arg0) {
 
-	}
+        Reporter.log("About to begin executing Suite " + arg0.getName(), true);
 
-	// This belongs to ISuiteListener and will execute, once the Suite is finished
+    }
 
-	@Override
+    // This belongs to ISuiteListener and will execute, once the Suite is finished
 
-	public void onFinish(ISuite arg0) {
+    @Override
 
-		Reporter.log("About to end executing Suite " + arg0.getName(), true);
+    public void onFinish(ISuite arg0) {
 
-	}
+        Reporter.log("About to end executing Suite " + arg0.getName(), true);
 
-	// This belongs to ITestListener and will execute before starting of Test set/batch 
+    }
 
-	public void onStart(ITestContext arg0) {
+    // This belongs to ITestListener and will execute before starting of Test set/batch
 
-		Reporter.log("About to begin executing Test " + arg0.getName(), true);
+    public void onStart(ITestContext arg0) {
 
-	}
+        Reporter.log("About to begin executing Test " + arg0.getName(), true);
 
-	// This belongs to ITestListener and will execute, once the Test set/batch is finished
+    }
 
-	public void onFinish(ITestContext arg0) {
+    // This belongs to ITestListener and will execute, once the Test set/batch is finished
 
-		Reporter.log("Completed executing test " + arg0.getName(), true);
+    public void onFinish(ITestContext arg0) {
 
-	}
+        Reporter.log("Completed executing test " + arg0.getName(), true);
 
-	// This belongs to ITestListener and will execute only when the test is pass
+    }
 
-	public void onTestSuccess(ITestResult arg0) {
+    // This belongs to ITestListener and will execute only when the test is pass
 
-		// This is calling the printTestResults method
+    public void onTestSuccess(ITestResult arg0) {
 
-		printTestResults(arg0);
-		Log.info(arg0.getName()+" test succeeded!");
+        // This is calling the printTestResults method
 
-	}
+        printTestResults(arg0);
+        Log.info(arg0.getName() + " test succeeded!");
 
-	// This belongs to ITestListener and will execute only on the event of fail test
+    }
 
-	public void onTestFailure(ITestResult arg0) {
+    // This belongs to ITestListener and will execute only on the event of fail test
 
-		// This is calling the printTestResults method
+    public void onTestFailure(ITestResult arg0) {
 
-		printTestResults(arg0);
-		Log.info(arg0.getName()+" test failed!");
-		
+        // This is calling the printTestResults method
 
+        printTestResults(arg0);
+        Log.info(arg0.getName() + " test failed!");
 
-	}
 
-	// This belongs to ITestListener and will execute before the main test start (@Test)
+    }
 
-	public void onTestStart(ITestResult arg0) {
+    // This belongs to ITestListener and will execute before the main test start (@Test)
 
-		System.out.println("The execution of the main test starts now");
-		Log.info("The execution of "+arg0.getName()+" starts now");
+    public void onTestStart(ITestResult arg0) {
 
-	}
+        System.out.println("The execution of the main test starts now");
+        Log.info("The execution of " + arg0.getName() + " starts now");
 
-	// This belongs to ITestListener and will execute only if any of the main test(@Test) get skipped
+    }
 
-	public void onTestSkipped(ITestResult arg0) {
+    // This belongs to ITestListener and will execute only if any of the main test(@Test) get skipped
 
-		printTestResults(arg0);
-		Log.info(arg0.getName()+" was skipped!");
+    public void onTestSkipped(ITestResult arg0) {
 
+        printTestResults(arg0);
+        Log.info(arg0.getName() + " was skipped!");
 
-	}
 
-	// This is just a piece of shit, ignore this
+    }
 
-	public void onTestFailedButWithinSuccessPercentage(ITestResult arg0) {
+    // This is just a piece of shit, ignore this
 
-	}
+    public void onTestFailedButWithinSuccessPercentage(ITestResult arg0) {
 
-	// This is the method which will be executed in case of test pass or fail
+    }
 
-	// This will provide the information on the test
+    // This is the method which will be executed in case of test pass or fail
 
-	private void printTestResults(ITestResult result) {
+    // This will provide the information on the test
 
-		Reporter.log("Test Method resides in " + result.getTestClass().getName(), true);
+    private void printTestResults(ITestResult result) {
 
-		if (result.getParameters().length != 0) {
+        Reporter.log("Test Method resides in " + result.getTestClass().getName(), true);
 
-			String params = null;
+        if(result.getParameters().length != 0) {
 
-			for (Object parameter : result.getParameters()) {
+            String params = null;
 
-				params += parameter.toString() + ",";
+            for(Object parameter: result.getParameters()) {
 
-			}
+                params += parameter.toString() + ",";
 
-			Reporter.log("Test Method had the following parameters : " + params, true);
+            }
 
-		}
+            Reporter.log("Test Method had the following parameters : " + params, true);
 
-		String status = null;
+        }
 
-		switch (result.getStatus()) {
+        String status = null;
 
-		case ITestResult.SUCCESS:
+        switch(result.getStatus()) {
 
-			status = "Pass";
+            case ITestResult.SUCCESS:
 
-			break;
+                status = "Pass";
 
-		case ITestResult.FAILURE:
+                break;
 
-			status = "Failed";
+            case ITestResult.FAILURE:
 
-			break;
+                status = "Failed";
 
-		case ITestResult.SKIP:
+                break;
 
-			status = "Skipped";
+            case ITestResult.SKIP:
 
-		}
+                status = "Skipped";
 
-		Reporter.log("Test Status: " + status, true);
-		Log.info("Test Status:" + status);
+        }
 
-	}
+        Reporter.log("Test Status: " + status, true);
+        Log.info("Test Status:" + status);
 
-	// This belongs to IInvokedMethodListener and will execute before every method including @Before @After @Test
+    }
 
-	public void beforeInvocation(IInvokedMethod arg0, ITestResult arg1) {
+    // This belongs to IInvokedMethodListener and will execute before every method including @Before @After @Test
 
-		String textMsg = "About to begin executing following method : " + returnMethodName(arg0.getTestMethod());
+    public void beforeInvocation(IInvokedMethod arg0, ITestResult arg1) {
 
-		Reporter.log(textMsg, true);
+        String textMsg = "About to begin executing following method : " + returnMethodName(arg0.getTestMethod());
 
-	}
+        Reporter.log(textMsg, true);
 
-	// This belongs to IInvokedMethodListener and will execute after every method including @Before @After @Test
+    }
 
-	public void afterInvocation(IInvokedMethod arg0, ITestResult arg1) {
+    // This belongs to IInvokedMethodListener and will execute after every method including @Before @After @Test
 
-		String textMsg = "Completed executing following method : " + returnMethodName(arg0.getTestMethod());
+    public void afterInvocation(IInvokedMethod arg0, ITestResult arg1) {
 
-		Reporter.log(textMsg, true);
+        String textMsg = "Completed executing following method : " + returnMethodName(arg0.getTestMethod());
 
-	}
+        Reporter.log(textMsg, true);
 
-	// This will return method names to the calling function
+    }
 
-	private String returnMethodName(ITestNGMethod method) {
+    // This will return method names to the calling function
 
-		return method.getRealClass().getSimpleName() + "." + method.getMethodName();
+    private String returnMethodName(ITestNGMethod method) {
 
-	}
-	
-	
+        return method.getRealClass().getSimpleName() + "." + method.getMethodName();
+
+    }
+
 
 }

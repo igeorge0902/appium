@@ -1,5 +1,14 @@
 package qa.ios.util;
 
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,49 +17,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.swing.*;
-import org.testng.xml.XmlClass;
-import org.testng.xml.XmlInclude;
-import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.*;
 
 public class CreateXml extends JFrame {
 
-    private XmlSuite suite = new XmlSuite();
-    private XmlTest test = new XmlTest(suite);
-
+    private static final long serialVersionUID = 1L;
     private static String value6 = new String();
     private static XmlClass testClass;
     private static XmlInclude included;
-
     private static Map<String, XmlInclude> includes = new HashMap<String, XmlInclude>();
-    private Set<String> includesSet = Collections.synchronizedSet(new HashSet<String>());
-
     private static Set<String> testSet_ = Collections.synchronizedSet(new HashSet<String>());
-    private ArrayList<XmlClass> classes = new ArrayList<XmlClass>();
-
     private static Map<String, String> parameters = new HashMap<String, String>();
     private static Map<String, XmlClass> testClasses_ = new HashMap<String, XmlClass>();
-
-    private Set<String> setlisteners = new HashSet<String>();
-
-    private Set<String> excludesSet = Collections.synchronizedSet(new HashSet<String>());
-    private List<String> excludes = new ArrayList<String>();
-
-    private List<XmlInclude> includesList = new ArrayList<XmlInclude>();
-
-    private Class<?> m_class = null;
-    private Method[] methods = null;
-
+    final JTextField text1, text2, text3, text4, text5, text6, text7, text8;
     ADDButtonHandler addhandler = new ADDButtonHandler();
     SHOWButtonHandler showhandler = new SHOWButtonHandler();
     REMOVEButtonHandler removehandler = new REMOVEButtonHandler();
-
-    private static final long serialVersionUID = 1L;
-
     JButton ADD;
     JButton SHOW;
     JButton REMOVE;
@@ -58,10 +39,17 @@ public class CreateXml extends JFrame {
     JPanel panel;
     JFrame frame;
     JLabel label;
-
     JLabel label1, label2, label3, label4, label5, label6, label7, label8;
-
-    final JTextField text1, text2, text3, text4, text5, text6, text7, text8;
+    private XmlSuite suite = new XmlSuite();
+    private XmlTest test = new XmlTest(suite);
+    private Set<String> includesSet = Collections.synchronizedSet(new HashSet<String>());
+    private ArrayList<XmlClass> classes = new ArrayList<XmlClass>();
+    private Set<String> setlisteners = new HashSet<String>();
+    private Set<String> excludesSet = Collections.synchronizedSet(new HashSet<String>());
+    private List<String> excludes = new ArrayList<String>();
+    private List<XmlInclude> includesList = new ArrayList<XmlInclude>();
+    private Class<?> m_class = null;
+    private Method[] methods = null;
 
     CreateXml() {
         setTitle("TestNG xml creator");
@@ -159,202 +147,23 @@ public class CreateXml extends JFrame {
         REMOVE.addActionListener(removehandler);
     }
 
-    // Internal class — handles the ADD button action
-    class ADDButtonHandler implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            String value1 = text1.getText();
-            String value2 = text2.getText();
-            String value3 = text3.getText();
-            String value4 = text4.getText();
-            String value5 = text5.getText();
-            value6 = text6.getText();
-            String value7 = text7.getText();
-            String value8 = text8.getText();
-
-            suite.setVerbose(10);
-            suite.setName(value1);
-
-            if (!value2.isEmpty()) {
-                setlisteners.add(value2);
-                suite.getListeners().removeAll(suite.getListeners());
-                suite.getListeners().addAll(setlisteners);
-                suite.setListeners(suite.getListeners());
-            } else {
-                suite.setListeners(suite.getListeners());
-            }
-
-            if (!value3.isEmpty()) {
-                test.setName(value3);
-            }
-
-            if (!value4.isEmpty() || !value5.isEmpty()) {
-                parameters.put(value4, value5);
-                test.setParameters(parameters);
-            }
-
-            if (!value6.isEmpty()) {
-                try {
-                    m_class = Class.forName(value6);
-                } catch (ClassNotFoundException ex) {
-                    m_class = null;
-                }
-
-                if (m_class != null) {
-                    testClass = new XmlClass(value6);
-
-                    if (!testSet_.contains(value6)) {
-                        testSet_.add(value6);
-                        testClasses_.put(testClass.getName(), testClass);
-
-                        classes.clear();
-                        classes.addAll(testClasses_.values());
-                        System.out.println(testClasses_.keySet().size());
-
-                        test.setXmlClasses(classes);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null,
-                            "No matching Test Class to add", "What happened?",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-
-            if (!value7.isEmpty()) {
-                included = new XmlInclude(value7);
-                try {
-                    m_class = Class.forName(value6);
-                } catch (ClassNotFoundException ex) {
-                    m_class = null;
-                }
-
-                if (m_class != null) {
-                    methods = m_class.getDeclaredMethods();
-
-                    for (Method method : methods) {
-                        if (method.getName().equals(included.getName())) {
-                            if (!includesSet.contains(value7)) {
-                                includesSet.add(value7);
-                                System.out.println("IncSet: " + includesSet);
-
-                                includes.put(included.getName(), included);
-                                System.out.println("IncMap: " + includes.values() + ", keys:" + includes.keySet());
-
-                                excludesSet.remove(method.getName());
-
-                                includesList.clear();
-                                includesList.addAll(includes.values());
-
-                                for (int i = 0; i < test.getClasses().size(); i++) {
-                                    test.getClasses().get(i).setIncludedMethods(includesList);
-                                }
-                            }
-                        }
-                    }
-                } else if (!value7.isEmpty() && m_class == null) {
-                    JOptionPane.showMessageDialog(null,
-                            "No matching Test Class to add", "What happened?",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-
-            if (value8.isEmpty()) {
-                try {
-                    m_class = Class.forName(value6);
-                } catch (ClassNotFoundException ex) {
-                    m_class = null;
-                }
-
-                if (m_class != null) {
-                    methods = m_class.getDeclaredMethods();
-
-                    for (Method method : methods) {
-                        if (!method.getName().equals(value7)) {
-                            excludesSet.add(method.getName());
-                            System.out.println("ExSet_: " + excludesSet);
-
-                            if (value7.isEmpty()) {
-                                excludes.clear();
-                                excludes.addAll(excludesSet);
-                                excludes.remove(includesList);
-
-                                for (int i = 0; i < testClasses_.keySet().size(); i++) {
-                                    if (testClasses_.keySet().contains(testClass.getName())) {
-                                        classes.get(classes.size() - 1).setExcludedMethods(excludes);
-                                        System.out.println(classes.get(classes.size() - 1));
-                                    }
-                                }
-                            } else {
-                                excludesSet.removeAll(includesSet);
-                                System.out.println("ExSet: " + excludesSet);
-
-                                excludes.clear();
-                                excludes.addAll(excludesSet);
-
-                                for (int i = 0; i < testClasses_.keySet().size(); i++) {
-                                    classes.get(classes.size() - 1).setExcludedMethods(excludes);
-                                    System.out.println(classes.get(classes.size() - 1));
-                                }
-                            }
-                        }
-                    }
-                } else if (m_class == null) {
-                    JOptionPane.showMessageDialog(null,
-                            "No matching Test Class to add", "What happened?",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-
-            if (!value8.isEmpty()) {
-                try {
-                    m_class = Class.forName(value6);
-                } catch (ClassNotFoundException ex) {
-                    m_class = null;
-                }
-
-                if (m_class != null) {
-                    methods = m_class.getDeclaredMethods();
-
-                    for (Method method : methods) {
-                        if (method.getName().equals(value8)) {
-                            includesSet.remove(value8);
-                            includes.keySet().remove(value8);
-
-                            includesList.clear();
-                            includesList.addAll(includes.values());
-
-                            excludesSet.add(value8);
-                            excludes.clear();
-                            excludes.addAll(excludesSet);
-
-                            for (int i = 0; i < test.getClasses().size(); i++) {
-                                test.getClasses().get(i).setIncludedMethods(includesList);
-                                test.getClasses().get(i).setExcludedMethods(excludes);
-                            }
-                        }
-                    }
-                }
-            }
-
-            JOptionPane.showMessageDialog(null, "Done", "What happened?",
-                    JOptionPane.INFORMATION_MESSAGE);
+    /** Safely attempt Class.forName, returning null instead of throwing. */
+    private static Class<?> classForNameOrNull(String name) {
+        try {
+            return Class.forName(name);
+        }
+        catch(ClassNotFoundException e) {
+            return null;
         }
     }
 
-    class SHOWButtonHandler implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            System.out.println(suite.toXml());
-        }
-    }
-
-    class REMOVEButtonHandler implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            final JDialog dialog = new JDialog(frame, "Click a button", true);
-            dialog.setLocationRelativeTo(frame);
-            dialog.setContentPane(createSimpleDialogBox());
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            dialog.pack();
-            dialog.setVisible(true);
-        }
+    public static void main(String[] arg) {
+        CreateXml frame = new CreateXml();
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(500, 400));
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     private JPanel createSimpleDialogBox() {
@@ -381,7 +190,7 @@ public class CreateXml extends JFrame {
         radioButtons[3] = new JRadioButton("Remove Excluded Methods");
         radioButtons[3].setActionCommand(excludedMethod);
 
-        for (int i = 0; i < numButtons; i++) {
+        for(int i = 0; i < numButtons; i++) {
             group.add(radioButtons[i]);
         }
         radioButtons[0].setSelected(true);
@@ -391,25 +200,35 @@ public class CreateXml extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String command = group.getSelection().getActionCommand();
 
-                if (command == testClasses) {
+                if(command == testClasses) {
                     value6 = JOptionPane.showInputDialog("Enter the Test Class you want to remove:");
 
-                    if (null == value6) {
-                        JOptionPane.showMessageDialog(null,
-                                "Enter Test Class name to remove", "What happened?",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    } else if (classForNameOrNull(value6) == null) {
-                        JOptionPane.showMessageDialog(null,
-                                "No Test Classes found", "What happened?",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    } else if (!testClasses_.keySet().contains(value6)) {
-                        JOptionPane.showMessageDialog(null,
-                                "No Test Classes found to remove", "What happened?",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    } else {
+                    if(null == value6) {
+                        JOptionPane.showMessageDialog(
+                            null,
+                            "Enter Test Class name to remove", "What happened?",
+                            JOptionPane.INFORMATION_MESSAGE
+                        );
+                    }
+                    else if(classForNameOrNull(value6) == null) {
+                        JOptionPane.showMessageDialog(
+                            null,
+                            "No Test Classes found", "What happened?",
+                            JOptionPane.INFORMATION_MESSAGE
+                        );
+                    }
+                    else if(!testClasses_.keySet().contains(value6)) {
+                        JOptionPane.showMessageDialog(
+                            null,
+                            "No Test Classes found to remove", "What happened?",
+                            JOptionPane.INFORMATION_MESSAGE
+                        );
+                    }
+                    else {
                         try {
                             m_class = Class.forName(value6);
-                        } catch (ClassNotFoundException ex) {
+                        }
+                        catch(ClassNotFoundException ex) {
                             m_class = null;
                         }
 
@@ -423,15 +242,15 @@ public class CreateXml extends JFrame {
 
                         methods = m_class.getDeclaredMethods();
 
-                        for (Method method : methods) {
-                            if (includesSet.contains(method.getName())) {
+                        for(Method method: methods) {
+                            if(includesSet.contains(method.getName())) {
                                 includesSet.remove(method.getName());
                                 includes.keySet().remove(method.getName());
 
                                 includesList.clear();
                                 includesList.addAll(includes.values());
 
-                                for (int i = 0; i < test.getClasses().size(); i++) {
+                                for(int i = 0; i < test.getClasses().size(); i++) {
                                     test.getClasses().get(i).setIncludedMethods(includesList);
                                 }
                             }
@@ -441,38 +260,45 @@ public class CreateXml extends JFrame {
                             excludes.addAll(excludesSet);
                             System.out.println("ExSet: " + excludesSet);
 
-                            for (int i = 0; i < test.getClasses().size(); i++) {
+                            for(int i = 0; i < test.getClasses().size(); i++) {
                                 test.getClasses().get(i).setExcludedMethods(excludes);
                             }
                         }
 
-                        JOptionPane.showMessageDialog(null,
-                                "Test Class removed", "What happened?",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(
+                            null,
+                            "Test Class removed", "What happened?",
+                            JOptionPane.INFORMATION_MESSAGE
+                        );
                         value6 = JOptionPane.showInputDialog("Enter the Test Class you want to remove:");
                     }
                 }
 
-                if (command == parameter) {
+                if(command == parameter) {
                     String parameterName = JOptionPane.showInputDialog(
-                            "Enter the name of parameter you would like to remove: ");
-                    if (!parameters.values().contains(parameterName)) {
-                        JOptionPane.showMessageDialog(null,
-                                "No Parameters found", "What happened?",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    } else {
+                        "Enter the name of parameter you would like to remove: ");
+                    if(!parameters.values().contains(parameterName)) {
+                        JOptionPane.showMessageDialog(
+                            null,
+                            "No Parameters found", "What happened?",
+                            JOptionPane.INFORMATION_MESSAGE
+                        );
+                    }
+                    else {
                         parameters.values().remove(parameterName);
-                        JOptionPane.showMessageDialog(null,
-                                "Parameter removed", "What happened?",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(
+                            null,
+                            "Parameter removed", "What happened?",
+                            JOptionPane.INFORMATION_MESSAGE
+                        );
                     }
                 }
 
-                if (command == includedMethod) {
+                if(command == includedMethod) {
                     // TODO: implement
                 }
 
-                if (command == excludedMethod) {
+                if(command == excludedMethod) {
                     // TODO: implement
                 }
             }
@@ -487,13 +313,13 @@ public class CreateXml extends JFrame {
     }
 
     /**
-     * Used by createSimpleDialogBox and createFeatureDialogBox
-     * to create a pane containing a description, a single column
-     * of radio buttons, and the Show it! button.
+     * Used by createSimpleDialogBox and createFeatureDialogBox to create a pane containing a description, a single column of radio buttons,
+     * and the Show it! button.
      */
-    private JPanel createPane(String description,
-                              JRadioButton[] radioButtons,
-                              JButton showButton) {
+    private JPanel createPane(
+        String description,
+        JRadioButton[] radioButtons,
+        JButton showButton) {
         int numChoices = radioButtons.length;
         JPanel box = new JPanel();
         JLabel label = new JLabel(description);
@@ -501,7 +327,7 @@ public class CreateXml extends JFrame {
         box.setLayout(new BoxLayout(box, BoxLayout.PAGE_AXIS));
         box.add(label);
 
-        for (int i = 0; i < numChoices; i++) {
+        for(int i = 0; i < numChoices; i++) {
             box.add(radioButtons[i]);
         }
 
@@ -511,21 +337,221 @@ public class CreateXml extends JFrame {
         return pane;
     }
 
-    /** Safely attempt Class.forName, returning null instead of throwing. */
-    private static Class<?> classForNameOrNull(String name) {
-        try {
-            return Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            return null;
+    // Internal class — handles the ADD button action
+    class ADDButtonHandler implements ActionListener {
+
+        public void actionPerformed(ActionEvent e) {
+            String value1 = text1.getText();
+            String value2 = text2.getText();
+            String value3 = text3.getText();
+            String value4 = text4.getText();
+            String value5 = text5.getText();
+            value6 = text6.getText();
+            String value7 = text7.getText();
+            String value8 = text8.getText();
+
+            suite.setVerbose(10);
+            suite.setName(value1);
+
+            if(!value2.isEmpty()) {
+                setlisteners.add(value2);
+                suite.getListeners().removeAll(suite.getListeners());
+                suite.getListeners().addAll(setlisteners);
+                suite.setListeners(suite.getListeners());
+            }
+            else {
+                suite.setListeners(suite.getListeners());
+            }
+
+            if(!value3.isEmpty()) {
+                test.setName(value3);
+            }
+
+            if(!value4.isEmpty() || !value5.isEmpty()) {
+                parameters.put(value4, value5);
+                test.setParameters(parameters);
+            }
+
+            if(!value6.isEmpty()) {
+                try {
+                    m_class = Class.forName(value6);
+                }
+                catch(ClassNotFoundException ex) {
+                    m_class = null;
+                }
+
+                if(m_class != null) {
+                    testClass = new XmlClass(value6);
+
+                    if(!testSet_.contains(value6)) {
+                        testSet_.add(value6);
+                        testClasses_.put(testClass.getName(), testClass);
+
+                        classes.clear();
+                        classes.addAll(testClasses_.values());
+                        System.out.println(testClasses_.keySet().size());
+
+                        test.setXmlClasses(classes);
+                    }
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "No matching Test Class to add", "What happened?",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+            }
+
+            if(!value7.isEmpty()) {
+                included = new XmlInclude(value7);
+                try {
+                    m_class = Class.forName(value6);
+                }
+                catch(ClassNotFoundException ex) {
+                    m_class = null;
+                }
+
+                if(m_class != null) {
+                    methods = m_class.getDeclaredMethods();
+
+                    for(Method method: methods) {
+                        if(method.getName().equals(included.getName())) {
+                            if(!includesSet.contains(value7)) {
+                                includesSet.add(value7);
+                                System.out.println("IncSet: " + includesSet);
+
+                                includes.put(included.getName(), included);
+                                System.out.println("IncMap: " + includes.values() + ", keys:" + includes.keySet());
+
+                                excludesSet.remove(method.getName());
+
+                                includesList.clear();
+                                includesList.addAll(includes.values());
+
+                                for(int i = 0; i < test.getClasses().size(); i++) {
+                                    test.getClasses().get(i).setIncludedMethods(includesList);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if(!value7.isEmpty() && m_class == null) {
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "No matching Test Class to add", "What happened?",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+            }
+
+            if(value8.isEmpty()) {
+                try {
+                    m_class = Class.forName(value6);
+                }
+                catch(ClassNotFoundException ex) {
+                    m_class = null;
+                }
+
+                if(m_class != null) {
+                    methods = m_class.getDeclaredMethods();
+
+                    for(Method method: methods) {
+                        if(!method.getName().equals(value7)) {
+                            excludesSet.add(method.getName());
+                            System.out.println("ExSet_: " + excludesSet);
+
+                            if(value7.isEmpty()) {
+                                excludes.clear();
+                                excludes.addAll(excludesSet);
+                                excludes.remove(includesList);
+
+                                for(int i = 0; i < testClasses_.keySet().size(); i++) {
+                                    if(testClasses_.keySet().contains(testClass.getName())) {
+                                        classes.get(classes.size() - 1).setExcludedMethods(excludes);
+                                        System.out.println(classes.get(classes.size() - 1));
+                                    }
+                                }
+                            }
+                            else {
+                                excludesSet.removeAll(includesSet);
+                                System.out.println("ExSet: " + excludesSet);
+
+                                excludes.clear();
+                                excludes.addAll(excludesSet);
+
+                                for(int i = 0; i < testClasses_.keySet().size(); i++) {
+                                    classes.get(classes.size() - 1).setExcludedMethods(excludes);
+                                    System.out.println(classes.get(classes.size() - 1));
+                                }
+                            }
+                        }
+                    }
+                }
+                else if(m_class == null) {
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "No matching Test Class to add", "What happened?",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+            }
+
+            if(!value8.isEmpty()) {
+                try {
+                    m_class = Class.forName(value6);
+                }
+                catch(ClassNotFoundException ex) {
+                    m_class = null;
+                }
+
+                if(m_class != null) {
+                    methods = m_class.getDeclaredMethods();
+
+                    for(Method method: methods) {
+                        if(method.getName().equals(value8)) {
+                            includesSet.remove(value8);
+                            includes.keySet().remove(value8);
+
+                            includesList.clear();
+                            includesList.addAll(includes.values());
+
+                            excludesSet.add(value8);
+                            excludes.clear();
+                            excludes.addAll(excludesSet);
+
+                            for(int i = 0; i < test.getClasses().size(); i++) {
+                                test.getClasses().get(i).setIncludedMethods(includesList);
+                                test.getClasses().get(i).setExcludedMethods(excludes);
+                            }
+                        }
+                    }
+                }
+            }
+
+            JOptionPane.showMessageDialog(
+                null, "Done", "What happened?",
+                JOptionPane.INFORMATION_MESSAGE
+            );
         }
     }
 
-    public static void main(String[] arg) {
-        CreateXml frame = new CreateXml();
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(500, 400));
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+    class SHOWButtonHandler implements ActionListener {
+
+        public void actionPerformed(ActionEvent e) {
+            System.out.println(suite.toXml());
+        }
+    }
+
+    class REMOVEButtonHandler implements ActionListener {
+
+        public void actionPerformed(ActionEvent e) {
+            final JDialog dialog = new JDialog(frame, "Click a button", true);
+            dialog.setLocationRelativeTo(frame);
+            dialog.setContentPane(createSimpleDialogBox());
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.pack();
+            dialog.setVisible(true);
+        }
     }
 }
