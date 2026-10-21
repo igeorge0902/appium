@@ -1,0 +1,12 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "28d0130d3eb48e48ecf1ed6a9038dc3b5fb33181",
+  "prompts": {},
+  "humans": {
+    "h_d154d11af00b83": {
+      "author": "GASPAR, GYORGY <gyorgy.gaspar@lhsystems.com>"
+    }
+  }
+}
